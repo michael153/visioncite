@@ -1,0 +1,292 @@
+<!DOCTYPE html> 
+<html lang = "en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="author" content="Michael Wan">
+        <script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+        {% load static %}
+        <link type="text/css" media="screen" href="{% static 'css/bootstrap-reboot.css' %}" rel="stylesheet">
+        {% load static %}
+        <link type="text/css" media="screen" href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+        
+    </head>
+    <body style = "overflow: hidden">
+        {% load bounded_boxes_extras %}
+        <h1>Autociter CV Training Module</h1><br><br>
+        <div class="row">
+            <div class = "col-sm-6" style="text-align:center">
+                <u><span id = 'imgDescriptor'>Img:</span></u><br>
+                <canvas id = "canvas" style="border:2px solid black" width="500px" height="600px"></canvas>
+            </div>
+            <div style = 'overflow-y: scroll' class = "col-sm-4">
+                <u>Citation information:</u><br>
+                <span id = 'citationInfo'></span>
+            </div>
+            <div class = "col-sm-2">
+                <u>Image List ({{indexes|length}})</u><br>
+                <select id='selectList' size='30'>
+                    {% for i in indexes %}
+                        <option onclick='update_pic({{i}})' id='selectList_{{i}}' value='{{urls|index:i}}'>{{ids|index:i}}</option>
+                    {% endfor %}
+                </select>
+                <br>
+                <button onclick='exportData()'>Export</button>
+                <br>
+                <form id = 'exportForm' action="{% url 'bounded_boxes:export_training_data' %}" method="post">
+                    {% csrf_token %}
+                    <input type='text' name = 'exportedValue' id='exportedValue'></form>
+                </form>
+            </div>
+        </div>
+    </body>
+    <script>
+        $(document).ready(function() {
+            mouseX = 0;
+            mouseY = 0;
+
+            index = {{cur_id}};
+            urls = {{urls|safe}};
+            ids = {{ids|safe}};
+            img_srcs = [];
+            training_data = {};
+            blobs = {{blobs|safe}}
+            selected = {};
+
+            canvas = document.getElementById("canvas");
+            ctx = canvas.getContext("2d");
+            ctx.lineWidth = 2;
+
+            img = new Image();
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, img.width*0.5, img.height*0.5);
+                resetCanvas(index);
+            }
+
+            // console.log(urls);
+            // console.log("\n\n");
+            // console.log(ids);
+            // console.log("\n\n");
+            // console.log(img_srcs);
+            // console.log(blobs);
+            // console.log("\n\n");
+
+            for (var i = 0; i < ids.length; i++) {
+                selected[ids[i]] = [];
+            }
+
+            for (var i = 0; i < urls.length; i++) {
+                locs = {}
+                words = {}
+                fonts = {}
+                for (var j = 0; j < blobs[urls[i]].length; j++) {
+                    blob = blobs[urls[i]][j]
+                    locs[j] = [blob["x1"], blob["x2"], blob["y1"], blob["y2"]];
+                    words[j] = blob["words"]
+                    fonts[j] = blob["font"]
+                }
+                training_data[ids[i]] = {
+                    "locs": locs,
+                    "words": words,
+                    "fonts": fonts
+                }
+            }
+
+            // console.log(training_data);
+            // console.log("\n\n");
+
+            {% for i in indexes %}
+                {% load static %}
+                img_srcs.push("{% static '/bounded/'' %}bounded_{{ids|index:i}}.jpg" + "?rand=" + Math.floor(Math.random()*1000000));
+            {% endfor %}
+
+            update_data(index);
+            
+            $('#exportForm').hide()
+            $("#canvas").click(function() {
+                checkBlobs();
+                update_data(index)
+            });
+        });
+        function update_pic(id) {
+            index = id
+            update_data(id)
+
+        }
+        function update_data(id) {
+            // document.getElementById("cur").src = img_srcs[id];
+            img.src = img_srcs[id];
+            // resetCanvas(id);
+            // console.log(id);
+            // console.log(selected[id]);
+            // ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // ctx.drawImage(img, 0, 0);
+            // ctx.scale(0.5, 0.5);
+
+            document.getElementById("imgDescriptor").innerHTML = "Image ID: " + ids[index];
+            citationInfo = ""
+            for (var l = 0; l < selected[ids[index]].length; l++) {
+                x1 = training_data[ids[index]]['locs'][selected[ids[index]][l]][0];
+                x2 = training_data[ids[index]]['locs'][selected[ids[index]][l]][1];
+                y1 = training_data[ids[index]]['locs'][selected[ids[index]][l]][2];
+                y2 = training_data[ids[index]]['locs'][selected[ids[index]][l]][3];
+                words = training_data[ids[index]]['words'][selected[ids[index]][l]]
+                if (words.length > 65)
+                    words = words.substring(0, 65) + "..."
+                citationInfo += "<span onclick='removeBadge(" + index + ", " + l + ")' class='badge badge-pill badge-secondary'>"
+                citationInfo += "<i class='fas fa-times-circle'></i>&nbsp;&nbsp;&nbsp;";
+                citationInfo += "(" + x1 + ", " + y1 + "), (" + x2 + ", " + y2 + ")&nbsp;&nbsp;&nbsp;&nbsp;"
+                citationInfo += words;
+                citationInfo += "</span><br>";
+            }
+            document.getElementById("citationInfo").innerHTML = citationInfo;
+            document.getElementById('selectList_' + index).selected = true;
+        }
+        function checkBlobs() {
+            rect = document.getElementById("canvas").getBoundingClientRect();
+            // console.log(rect)
+            // console.log(mouseX, mouseY);
+            natWidth = img.naturalWidth;
+            natHeight = img.naturalHeight;
+            clientWidth = document.getElementById("canvas").clientWidth;
+            clientHeight = document.getElementById("canvas").clientHeight;
+            translated_x = Math.round((mouseX - rect.left)*natWidth/clientWidth)
+            translated_y = Math.round((mouseY - rect.top)*natHeight/clientHeight)
+            img_id = ids[index]
+            // console.log(natWidth, natHeight, clientWidth, clientHeight, translated_x, translated_y);
+            for (var l = 0; l < Object.keys(training_data[img_id]['locs']).length; l++) {
+                x1 = training_data[img_id]['locs'][l][0];
+                x2 = training_data[img_id]['locs'][l][1];
+                y1 = training_data[img_id]['locs'][l][2];
+                y2 = training_data[img_id]['locs'][l][3];
+                citationInfo += ("(" + x1 + ", " + y1 + "), (" + x2 + ", " + y2 + ")<br>");
+                if (translated_x >= x1 && translated_x <= x2 && translated_y >= y1 && translated_y <= y2) {
+                    included = selected[ids[index]].indexOf(l);
+                    if (included > -1) {
+                        selected[ids[index]].splice(included, 1);
+                        resetCanvas(index)
+                    }
+                    else {
+                        // console.log("In rectangle " + l);
+                        untranslated_x1 = Math.round(x1*clientWidth/natWidth);
+                        untranslated_x2 = Math.round(x2*clientWidth/natWidth);
+                        untranslated_y1 = Math.round(y1*clientWidth/natWidth);
+                        untranslated_y2 = Math.round(y2*clientWidth/natWidth);
+                        drawSelectedRect(untranslated_x1, untranslated_x2, untranslated_y1, untranslated_y2);
+                        console.log(x1, x2, y1, y2);
+                        selected[ids[index]].push(l);
+                    }
+                }
+            }
+            // console.log(translated_x + ", " + translated_y);
+        }
+
+        function drawSelectedRect(x1, x2, y1, y2) {
+            ctx.beginPath();
+            ctx.lineWidth = "3";
+            ctx.strokeStyle = "green";
+            ctx.rect(x1, y1, x2 - x1, y2 - y1);
+            ctx.stroke();
+        }
+
+        function resetCanvas(id) {
+            clientWidth = document.getElementById("canvas").clientWidth;
+            clientHeight = document.getElementById("canvas").clientHeight;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, img.width*0.5, img.height*0.5);
+            for (var i = 0; i < selected[ids[id]].length; i++) {
+                x1 = training_data[ids[id]]['locs'][selected[ids[id]][i]][0]
+                x2 = training_data[ids[id]]['locs'][selected[ids[id]][i]][1]
+                y1 = training_data[ids[id]]['locs'][selected[ids[id]][i]][2]
+                y2 = training_data[ids[id]]['locs'][selected[ids[id]][i]][3]
+                un_x1 = Math.round(x1*clientWidth/natWidth);
+                un_x2 = Math.round(x2*clientWidth/natWidth);
+                un_y1 = Math.round(y1*clientWidth/natWidth);
+                un_y2 = Math.round(y2*clientWidth/natWidth);
+                // console.log(x1, x2, y1, y2);
+                // console.log("drawing...")
+                drawSelectedRect(un_x1, un_x2, un_y1, un_y2);
+            }
+            // console.log("\n");
+        }
+
+        function removeBadge(index, l) {
+            selected[ids[index]].splice(l, 1);
+            resetCanvas(index)
+            update_data(index)
+        }
+        function exportData() {
+            $('#exportForm').show()
+            exportJson = {}
+            for (var i = 0; i < ids.length; i++) {
+                if (selected[ids[i]].length > 0) {
+                    exportJson[ids[i]] = {};
+                    tmp_locs = []
+                    tmp_words = []
+                    tmp_fonts = []
+                    for (var j = 0; j < selected[ids[i]].length; j++) {
+                        x1 = training_data[ids[i]]['locs'][selected[ids[i]][j]][0];
+                        x2 = training_data[ids[i]]['locs'][selected[ids[i]][j]][1];
+                        y1 = training_data[ids[i]]['locs'][selected[ids[i]][j]][2];
+                        y2 = training_data[ids[i]]['locs'][selected[ids[i]][j]][3];
+                        words = training_data[ids[i]]['words'][selected[ids[i]][j]]
+                        font = training_data[ids[i]]['fonts'][selected[ids[i]][j]]
+                        loc = {
+                            "x1": x1,
+                            "x2": x2,
+                            "y1": y1,
+                            "y2": y2
+                        }
+                        tmp_locs.push(loc)
+                        tmp_words.push(words)
+                        tmp_fonts.push(font)
+                    }
+                    // console.log(tmp_locs, tmp_words, tmp_fonts);
+                    console.log(ids[i]);
+                    console.log("----------");
+                    console.log({
+                        'locs': tmp_locs,
+                        'words': tmp_words,
+                        'font': tmp_fonts
+                    })
+                    console.log("\n");
+                    exportJson[ids[i]] = {
+                        'locs': tmp_locs,
+                        'words': tmp_words,
+                        'font': tmp_fonts
+                    }
+                }
+            }
+            strData = JSON.stringify(exportJson);
+            $('#exportedValue').val(strData);
+            $('#exportForm').submit()
+        }
+
+        document.addEventListener('click', getMouse, true);
+        function getMouse(e){
+            mouseX = e.pageX;
+            mouseY = e.pageY;
+        }
+        window.onkeyup = function(e) {
+            var key = e.keyCode ? e.keyCode : e.which;
+            if (key == 39) {
+               if (index + 1 < urls.length)
+                    index += 1;
+                else
+                    index = 0;
+                update_data(index);
+            } else if (key == 37) {
+                if (index == 0)
+                    index = urls.length - 1
+                else
+                    index -= 1;
+                update_data(index);
+            }
+        }
+    </script>
+</html>
