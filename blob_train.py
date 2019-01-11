@@ -15,7 +15,6 @@
 # Author: Michael Wan <m.wan@berkeley.edu>
 
 import os
-import os.path
 import sys
 import time
 import json
@@ -32,45 +31,33 @@ import assets
 import images
 import pipeline
 
-def read_blob_file(file_name):
-    return json.load(open(assets.DATA_PATH + "/web_generated/" + file_name + ".json", "r"))
+def get_data(filename):
+    return json.load(open(os.path.join(assets.DATA_PATH, 'training/{0}.train'.format(filename)), "r"))
 
-def gather_blobs(blob_data):
-    blobs = []
-    for picture_id in blob_data:
-        font = blob_data[picture_id]["font"]
-        locs = blob_data[picture_id]["locs"]
-        words = blob_data[picture_id]["words"]
-        assert len(font) == len(locs) == len(words), 'Improper blob data formatting: len(f,l,w) = {0}'.format((len(font), len(locs), len(words)))
-        for i in range(len(font)):
-            loc = [locs[i]["x1"], locs[i]["x2"], locs[i]["y1"], locs[i]["y2"]]
-            blobs.append((loc, words[i], font[i]))
-    return blobs
+def get_x_y(labeled, regular):
+    x = np.array(labeled + regular)
+    y = np.array([1]*len(labeled) + [0]*len(regular))
+    return x, y
 
-def gather_all_blobs():
-    all_blobs = []
-    for url in pipeline.saved_blobs:
-        for blob in pipeline.saved_blobs[url]:
-            all_blobs.append((blob["coords"], blob["words"], blob["font"]))
-    return all_blobs
-
-def split_blobs(gathered_blobs, all_blobs):
-    def intersect(x, y):
-        return [a for a in y if a not in x]
-    blobs, other = gathered_blobs, intersect(gathered_blobs, all_blobs)
-    return blobs, other
-
-def build_model(input_length=5):
+'''
+Vector shape:
+[cx, cy, len, height, right, left, upper, lower, h_array(10), v_array(10)]
+(28, 1)
+'''
+def build_model(input_length=28):
     model = Sequential()
-    model.add(Dense(50, activation = "relu", input_shape=(5,)))
+    model.add(Dense(250, activation = "relu", input_shape=(28,)))
+    model.add(Dense(250, activation = "tanh"))
     model.add(Dropout(0.2))
-    model.add(Dense(50, activation = "tanh", input_shape=(5,)))
+    model.add(Dense(100, activation = "sigmoid"))
+    model.add(Dense(100, activation = "tanh"))
+    model.add(Dropout(0.3))
+    model.add(Dense(40, activation = "sigmoid"))
+    model.add(Dense(40, activation = "relu"))
+    model.add(Dropout(0.5))
+    model.add(Dense(16, activation = "sigmoid"))
+    model.add(Dense(16, activation = "relu"))
     model.add(Dropout(0.2))
-    model.add(Dense(50, activation = "sigmoid", input_shape=(5,)))
-    model.add(Dropout(0.2))
-    model.add(Dense(50, activation = "tanh", input_shape=(5,)))
-    model.add(Dropout(0.2))
-    model.add(Dense(50, activation = "relu", input_shape=(5,)))
     model.add(Dense(1, activation = "sigmoid"))
 
     start = time.time()
@@ -83,26 +70,26 @@ def build_model(input_length=5):
     model.summary()
     return model
 
-def get_x_y(filename):
-    c = gather_all_blobs()
-    x, y = split_blobs(gather_blobs(read_blob_file(filename)), c)
-    x = list(map(pipeline.blob_to_trainable, x))
-    y = list(map(pipeline.blob_to_trainable, y))
-    return np.array(x+y), np.array([1]*len(x) + [0]*len(y))
+file_name = "1547083109_export"
+data = get_data(file_name)
+X, Y = get_x_y(data["labeled"], data["other"])
+x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.25)
 
-filename = "batch_1_1545682088_export"
+print("\n")
+print("X.shape", X.shape)
+print("Y.shape", Y.shape)
+print("x_train.shape", x_train.shape)
+print("x_test.shape", x_test.shape)
+print("y_train.shape", y_train.shape)
+print("y_test.shape", y_test.shape)
+print("\n")
+
 model = build_model()
-x, y = get_x_y(filename)
-
-print("X.shape", x.shape)
-print("Y.shape", y.shape)
-
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25)
 
 results = model.fit(
     x_train, y_train,
-    epochs = 50,
-    batch_size = 500,
+    epochs = 100,
+    batch_size = 750,
     validation_data = (x_train, y_train)
 )
 

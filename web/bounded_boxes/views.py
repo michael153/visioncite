@@ -16,28 +16,32 @@ from blob_cv import get_blobs_by_url
 
 def index_view(request):
     data = {}
-    bounded_images = pipeline.get_bounded_images()
-    data['urls'] = bounded_images
-    data['ids'], data['blobs'], data['rects'] = [], {}, {}
-    data['indexes'] = list(range(len(bounded_images)))
+    bounded = pipeline.get_bounded_images()
+    segments = pipeline.get_segments()
+
+    data['ids'] = bounded
+    data['blobs'] = {}
+    data['rects'] = {}
+    data['indexes'] = list(range(len(bounded)))
     data['cur_id'] = 0
-    for url in bounded_images:
-        data['ids'].append(pipeline.image_dict[url])
-    for url in bounded_images:
-        _, blobs = get_blobs_by_url(url, pipeline.image_dict[url], useSavedData=True)
-        data['blobs'][url] = []
-        for i, blob in enumerate(blobs):
-            x1, x2, y1, y2 = blob[0][0], blob[0][1], blob[0][2], blob[0][3]
-            blob_info = {
-                'x1': x1,
-                'x2': x2,
-                'y1': y1,
-                'y2': y2,
-                'words': blob[1],
-                'font': blob[2]
-            }
-            data['blobs'][url].append(blob_info)
-            data['rects'][(x1, x2, y1, y2)] = i
+    
+    for img in bounded:
+        blobs = []
+        data['blobs'][img] = []
+        for polygon in segments[img]:
+            if len(polygon):
+                minx = min([p[0] for p in polygon])
+                maxx = max([p[0] for p in polygon])
+                miny = min([p[1] for p in polygon])
+                maxy = max([p[1] for p in polygon])
+                blob = {
+                    'x1': minx,
+                    'x2': maxx,
+                    'y1': miny,
+                    'y2': maxy
+                }
+                data['blobs'][img].append(blob)
+
     return render(request, 'bounded_boxes/index.html', data)
 
 def export_training_data_view(request):
