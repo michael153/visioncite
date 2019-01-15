@@ -26,7 +26,7 @@ def generate_otsu(img_file_name):
 	binary = image > thresh
 	plt.imsave(binary_path, np.array(binary), cmap=plt.cm.gray)
 
-def generate_segments(img_file_name, output_segments=True, save_image=True, display_image=True):
+def generate_segments(img_file_name, save_segments=True, save_image=True, display_image=True):
 	try:
 		use_binary = True
 		prima_tesseract_src = '/Users/michaelwan/Downloads/TesseractToPAGE'
@@ -46,13 +46,13 @@ def generate_segments(img_file_name, output_segments=True, save_image=True, disp
 				img_path,
 				xml_path
 			   )
-		if display:
+		if display_image:
 			print(cmd)
 		start = time.time()
 		subprocess.call("{0}".format(cmd), shell=True, stderr=DEVNULL, stdout=DEVNULL)
-		if display:
+		if display_image:
 			print("Time for PRImA-Tesseract Call: {0:.2f}".format(time.time() - start))
-		if display:
+		if display_image:
 			fig,ax = plt.subplots(1)
 			ax.imshow(image, cmap=plt.cm.gray)
 
@@ -61,7 +61,8 @@ def generate_segments(img_file_name, output_segments=True, save_image=True, disp
 				   xmldoc.getElementsByTagName('TextRegion'),
 				   xmldoc.getElementsByTagName('ImageRegion')]
 		region_names = ['Separator', 'Text', 'Region']
-		segments = []
+		segments_file_output = []
+		segments_ret = []
 
 		for r_id, region in enumerate(regions):
 			for i, section in enumerate(region):
@@ -73,50 +74,59 @@ def generate_segments(img_file_name, output_segments=True, save_image=True, disp
 				segment.append(str(len(points)))
 				for p in points:
 					segment.append("({0}, {1})".format(p[0], p[1]))
-				if display:
+				if display_image:
 					rect = patches.Polygon(list(points), linewidth=1,edgecolor='r',facecolor='none')
 					ax.add_patch(rect)
 				if save_image:
 					draw = ImageDraw.Draw(bounded)
 					draw.polygon(list(points), outline='red')
-				segments.append(segment)
-		if output_segments:
+				segments_file_output.append(segment)
+				segments_ret.append(points)
+		if save_segments:
 			with open(segment_path, 'w') as f:
-				f.write('\n'.join(['\n'.join(s) for s in segments]))
+				f.write('\n'.join(['\n'.join(s) for s in segments_file_output]))
 		if save_image:
 			bounded.save(os.path.join(images.BOUNDED_IMAGES_PATH, '{0}.jpg'.format(img_file_name)), "JPEG")
-		return segments
+		return segments_ret
 	except Exception as e:
 		print("[{0}] Segments [Failed!]: {1}".format(image, e))
 		return []
 
 
-# '''
-# Module One: Generating Segmented Images
-# '''
 
-# saved_images = pipeline.get_images()
-# display = False
-# # img_file_name = '1545518044OQX039A3HQ'
-# for image in saved_images:
-# 	try:
-# 		generate_otsu(image)
-# 		start = time.time()
-# 		generate_segments(image, output_segments=True, save_image=True, display_image=False)
-# 		dur = time.time() - start
-# 		print("[{0}] Segments calculated in: {1:.2f}s".format(image, dur))
-# 	except Exception as e:
-# 		print("[{0}] Preprocessing [Failed!]: {1}".format(image, e))
+if __name__ == '__main__':
+	MODULE = 3
+	if MODULE == 1:
+		'''Module One: Generating Segmented Images'''
+		saved_images = pipeline.get_images()
+		display = False
+		for image in saved_images:
+			try:
+				generate_otsu(image)
+				start = time.time()
+				generate_segments(image, save_segments=True, save_image=True, display_image=False)
+				dur = time.time() - start
+				print("[{0}] Segments calculated in: {1:.2f}s".format(image, dur))
+			except Exception as e:
+				print("[{0}] Preprocessing [Failed!]: {1}".format(image, e))
+		if display:
+			plt.show()
+	elif MODULE == 2:
+		'''Module Two: Generating Training Data'''
+		file_name = '1547083109_export.json'
+		data = pipeline.aggregate_labels(file_name, debug=True)
+		epoch = int(time.time())
+		train_file = file_name[:file_name.rfind('.')] + '_v{0}.train'.format(epoch)
+		with open(os.path.join(assets.DATA_PATH, 'training/{0}'.format(train_file)), 'w') as f:
+			json.dump(data, f, sort_keys=True, indent=4)
+	elif MODULE == 3:
+		'''Module Three: Classifying Bad Polygons'''
+		file_name = '1547442484_export.json'
+		data = pipeline.aggregate_polygon_data(file_name, debug=True)
+		epoch = int(time.time())
+		train_file = 'bad_polys_v{0}.train'.format(epoch)
+		with open(os.path.join(assets.DATA_PATH, 'training/{0}'.format(train_file)), 'w') as f:
+			json.dump(data, f, sort_keys=True, indent=4)
 
-# # if display:
-# # 	plt.show()
 
 
-'''
-Module Two: Generating Training Data
-'''
-file_name = '1547083109_export.json'
-data = pipeline.aggregate_labels(file_name)
-train_file = file_name[:file_name.rfind('.')] + '.train'
-with open(os.path.join(assets.DATA_PATH, 'training/{0}'.format(train_file)), 'w') as f:
-	json.dump(data, f, sort_keys=True, indent=4)

@@ -46,7 +46,7 @@ Vector shape:
 '''
 def build_model(input_length=28):
     model = Sequential()
-    model.add(Dense(250, activation = "relu", input_shape=(28,)))
+    model.add(Dense(250, activation = "relu", input_shape=(input_length,)))
     model.add(Dense(250, activation = "tanh"))
     model.add(Dropout(0.2))
     model.add(Dense(100, activation = "sigmoid"))
@@ -70,7 +70,9 @@ def build_model(input_length=28):
     model.summary()
     return model
 
-file_name = "1547083109_export"
+# file_name = "1547083109_export"
+# file_name = '1547083109_export_v1547432879'
+file_name = 'bad_polys_v1547455536'
 data = get_data(file_name)
 X, Y = get_x_y(data["labeled"], data["other"])
 x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.25)
@@ -84,7 +86,7 @@ print("y_train.shape", y_train.shape)
 print("y_test.shape", y_test.shape)
 print("\n")
 
-model = build_model()
+model = build_model(8)
 
 results = model.fit(
     x_train, y_train,
