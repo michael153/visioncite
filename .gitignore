@@ -1,0 +1,13 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*$py.class
+
+# Environments
+.env/
+
+# Mac generated
+.DS_Store
+
+# Project Specific
+assets/segments
+images/
