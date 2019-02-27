@@ -23,8 +23,9 @@ def build_model(dim, num_class=4, data_source):
     flattened_dim = np.prod(np.array(dim))
     
     """
-    @param  d           m x n, where m and n are the dimensions of the images
-                        being passed into the model
+    @param  d           integer equal to m x n, where m and n are the
+                        dimensions of the images being passed into the
+                        model
     @param  num_class   number of possible labels for each pixel
     @return model       given an image, this model returns a d*num_class
                         array of probabilities. (num_class*i, num_class*(i+1))
