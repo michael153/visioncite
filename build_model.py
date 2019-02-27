@@ -3,22 +3,37 @@ import sys
 import time
 import json
 
-import torch
-import torch.nn as nn
+import images
 import numpy as np
+from PIL import Image, ImageOps
 
-image_dimensions = (x, y)
+CONST_IMG_HEIGHT = 1800
+CONST_IMG_WIDTH  = 1500
+
+def img_to_np(img):
+    arr = np.asarray(padded)
+    print(arr.shape)
+    return arr
+
+def pad_img(img):
+    size = img.size
+    dW = CONST_IMG_WIDTH - size[0]
+    dH = CONST_IMG_HEIGHT - size[1]
+    padding = (dW//2, dH//2, dW - dW//2, dH - dH//2)
+    padded = ImageOps.expand(img, padding, fill="white")
+    padded.show()
+    return padded
 
 def get_data(filename):
     return json.load(open(os.path.join(assets.DATA_PATH, 'training/{0}.train'.format(filename)), "r"))
 
 """
 @param  dim         the dimensions of the images being trained on
+        data_source contains all the data to be trained on
         num_class   the number of possible labels for each pixel
                     (default = 4: title, author(s), date, publisher info)
-        data_source contains all the data to be trained on
 """
-def build_model(dim, num_class=4, data_source):
+def build_model(dim, data_source, num_class=4):
     print("Image shape: {0}".format(dim))
     flattened_dim = np.prod(np.array(dim))
     
@@ -137,3 +152,7 @@ def build_model(dim, num_class=4, data_source):
     train(model, get_data(data_source))
 
     return model;
+
+img_path = images.RAW_IMAGES_PATH + "/1545517510FWQ774GLX3.jpg"
+img = Image.open(img_path)
+pad_img(img)
