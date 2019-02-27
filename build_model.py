@@ -13,22 +13,23 @@ def get_data(filename):
     return json.load(open(os.path.join(assets.DATA_PATH, 'training/{0}.train'.format(filename)), "r"))
 
 """
-Given img matrix, return mask
+@param  dim         the dimensions of the images being trained on
+        num_class   the number of possible labels for each pixel
+                    (default = 4: title, author(s), date, publisher info)
+        data_source contains all the data to be trained on
 """
-def build_model(img):
-    dim = img.shape
-    arr = img.flatten()
-    #title, author(s), date, publisher info
-    num_class = 4;
-    filename = "replace_this_text"
-
+def build_model(dim, num_class=4, data_source):
+    print("Image shape: {0}".format(dim))
+    flattened_dim = np.prod(np.array(dim))
+    
     """
-    @param  d       m x n, where m and n are the dimensions of the images
-                    being passed into the model
-    @return model   given an image, this model returns a d*num_class
-                    array of probabilities. (num_class*i, num_class*(i+1))
-                    represents the softmax probabilities of the ith
-                    pixel in respect to the classes
+    @param  d           m x n, where m and n are the dimensions of the images
+                        being passed into the model
+    @param  num_class   number of possible labels for each pixel
+    @return model       given an image, this model returns a d*num_class
+                        array of probabilities. (num_class*i, num_class*(i+1))
+                        represents the softmax probabilities of the ith
+                        pixel in respect to the classes
     """
     def make_simple_model(d, num_class):
         model = Sequential(d)
@@ -51,6 +52,49 @@ def build_model(img):
             optimizer = "adam",
             loss = "binary_crossentropy",
             metrics = ["accuracy"]
+        )
+        print("Model Compilation Time: ", time.time() - start)
+        model.summary()
+        return model
+
+    """
+    SegNet-Like Conv Net Model that takes 3D image input (RGB)
+    @param  image_dim   a tuple (h, w, 3) or (h, w) that represents the
+                        dimensions of the images being passed in
+    @param  num_class   number of possible labels for each pixel
+    @return model       given an image, model returns num_class
+                        probabilities for each pixel
+    """
+    def make_convnet_model(image_dim, num_class):
+        height, width = image_dim[0], image_dim[1]
+
+        model = Sequential()
+        model.add(Conv3D(128, kernel_size=2, activation='relu', input_shape=image_dim))
+        model.add(BatchNormalization())
+        model.add(MaxPooling3D(pool_size=(2,2,2), strides=(1,1,1), padding='valid'))
+        model.add(Conv3D(64, kernel_size=2, activation='relu'))
+        model.add(BatchNormalization())
+        model.add(MaxPooling3D(pool_size=(2,2,2), strides=(1,1,1), padding='valid'))
+        model.add(Conv3D(32, kernel_size=2, activation='relu'))
+        model.add(BatchNormalization())
+        model.add(MaxPooling3D(pool_size=(2,2,2), strides=(1,1,1), padding='valid'))
+        
+        model.add(UpSampling3D(size=(2,2,2)))
+        model.add(Conv3D(32, kernel_size=3, activation='relu'))
+        model.add(UpSampling3D(size=(2,2,2)))
+        model.add(Conv3D(64, kernel_size=3, activation='relu'))
+        model.add(UpSampling3D(size=(2,2,2)))
+        model.add(Conv3D(128, kernel_size=3, activation='relu'))
+
+        model.add(Flatten())
+        flattened_dim = height*width*num_class
+        model.add(Dense(flattened_dim, activation='softmax'))
+
+        start = time.time()
+        model.compile(
+            optimizer='adam',
+            loss='categorical_crossentropy',
+            metrics=['accuracy']
         )
         print("Model Compilation Time: ", time.time() - start)
         model.summary()
@@ -87,51 +131,8 @@ def build_model(img):
             json.write(model.to_json())
         print(np.mean(results.history["val_acc"]))
 
-
-    model = make_simple_model(arr.len, num_class)
-    train(model, get_data(filename))
+    # model = make_simple_model(arr.len, num_class)
+    model = make_convnet_model(dim, num_class)
+    train(model, get_data(data_source))
 
     return model;
-
-
-# def create_conv(c1, c2, c3):
-#     model = nn.Sequential(
-#         nn.Conv2d(c1, c2, kernel_size=(3, 3)),
-#         nn.BatchNorm2d(c2),
-#         nn.ReLU(),
-#         nn.Conv2d(c2, c3, kernel_size=(3, 3)),
-#         nn.BatchNorm2d(c3),
-#         nn.ReLU()
-#     )
-#     return model
-
-# def create_deconv(c1, c2, c3):
-#     model = nn.Sequential(
-#         nn.ConvTranspose2d(c1, c2, kernel_size=(3, 3)),
-#         nn.BatchNorm2d(c2),
-#         nn.ReLU(),
-#         nn.ConvTranspose2d(c2, c3, kernel_size=(3, 3)),
-#         nn.BatchNorm2d(c3),
-#         nn.ReLU()
-#     )
-
-# def create_model(num_class):
-#     conv1 = create_conv(3, 64, 128)
-#     conv2 = create_conv(128, 128, 128)
-#     conv3 = create_conv(128, 128, 128)
-#     conv4 = create_conv(128, 128, 128)
-    
-#     pool1 = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
-#     pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
-#     pool3 = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
-
-    local deconv4 = create_deconv(128, 128, 128)
-    local deconv3 = create_deconv(128+128, 128, 128)
-    local deconv2 = create_deconv(128+128, 128, 128)
-    local deconv1 = create_deconv(128+128, 64, num_class)
-
-    
-
-
-create_conv(3, 64, 128)
-
