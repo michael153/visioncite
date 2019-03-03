@@ -51,11 +51,11 @@ img_file_name = file_name + '.tif'
 data = xml_to_json(assets.XML_PATH + "/" + xml_file_name)
 img = Image.open(assets.IMAGE_PATH + "/" + img_file_name)
 
-# scaled_data = xml_to_json(assets.XML_PATH + "/" + xml_file_name, scale(
-# 	(data['metadata']['width'], data['metadata']['height']))
-# 	((CONST_IMG_WIDTH, CONST_IMG_HEIGHT))
-# )
-# scaled_img = scaled_img(img_file_name, CONST_IMG_HEIGHT, CONST_IMG_WIDTH)
+scaled_img = scale_img(img, width=CONST_IMG_WIDTH, height=CONST_IMG_HEIGHT)
+scaled_data = xml_to_json(assets.XML_PATH + "/" + xml_file_name, scale(
+	(data['metadata']['width'], data['metadata']['height']))
+	((CONST_IMG_WIDTH, CONST_IMG_HEIGHT))
+)
 
 draw_overlay(img, data)
-# draw_overlay(scaled_img, scaled_data)
+draw_overlay(scaled_img, scaled_data)

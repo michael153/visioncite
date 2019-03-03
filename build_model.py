@@ -14,18 +14,16 @@ def img_to_np(img):
     print(arr.shape)
     return arr
 
-def pad_img(img, height=CONST_IMG_HEIGHT, width=CONST_IMG_WIDTH):
+def pad_img(img, width=CONST_IMG_WIDTH, height=CONST_IMG_HEIGHT):
     size = img.size
     dW = width - size[0]
     dH = height - size[1]
     padding = (dW//2, dH//2, dW - dW//2, dH - dH//2)
     padded = ImageOps.expand(img, padding, fill="white")
-    padded.show()
     return padded
 
-def scale_img(img):
-    scaled = img.resize((CONST_IMG_HEIGHT, CONST_IMG_WIDTH))
-    scaled.show()
+def scale_img(img, width=CONST_IMG_WIDTH, height=CONST_IMG_HEIGHT):
+    scaled = img.resize((width, height))
     return scaled
 
 
