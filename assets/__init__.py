@@ -17,6 +17,6 @@ import os
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 DATA_PATH = PATH + "/data"
-MOCK_DATA_PATH = PATH + "/mock_data"
-WEBPAGES_PATH = PATH + "/webpages"
 SEGMENTS_PATH = PATH + "/segments"
+IMAGE_PATH = PATH + "/images"
+XML_PATH = PATH + "/xml"

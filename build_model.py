@@ -3,26 +3,31 @@ import sys
 import time
 import json
 
-import images
 import numpy as np
 from PIL import Image, ImageOps
 
 CONST_IMG_HEIGHT = 1800
-CONST_IMG_WIDTH  = 1500
+CONST_IMG_WIDTH  = 1200
 
 def img_to_np(img):
     arr = np.asarray(padded)
     print(arr.shape)
     return arr
 
-def pad_img(img):
+def pad_img(img, height=CONST_IMG_HEIGHT, width=CONST_IMG_WIDTH):
     size = img.size
-    dW = CONST_IMG_WIDTH - size[0]
-    dH = CONST_IMG_HEIGHT - size[1]
+    dW = width - size[0]
+    dH = height - size[1]
     padding = (dW//2, dH//2, dW - dW//2, dH - dH//2)
     padded = ImageOps.expand(img, padding, fill="white")
     padded.show()
     return padded
+
+def scale_img(img):
+    scaled = img.resize((CONST_IMG_HEIGHT, CONST_IMG_WIDTH))
+    scaled.show()
+    return scaled
+
 
 def get_data(filename):
     return json.load(open(os.path.join(assets.DATA_PATH, 'training/{0}.train'.format(filename)), "r"))
@@ -152,7 +157,3 @@ def build_model(dim, data_source, num_class=4):
     train(model, get_data(data_source))
 
     return model;
-
-img_path = images.RAW_IMAGES_PATH + "/1545517510FWQ774GLX3.jpg"
-img = Image.open(img_path)
-pad_img(img)
