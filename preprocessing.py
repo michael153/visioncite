@@ -19,8 +19,8 @@ def xml_to_json(xml_source_file, lambda_func=None):
     metadata['width'] = int(meta.attributes['imageWidth'].value)
     if lambda_func:
         metadata['width'], metadata['height'] = lambda_func(
-            metadata['width'],
-            metadata['height']
+            (metadata['width'],
+            metadata['height'])
         )
     json = {}
     for t in region_types:
