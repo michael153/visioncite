@@ -6,7 +6,7 @@ from matplotlib.pyplot import cm
 import numpy as np
 
 from build_model import scale_img
-from preprocessing import xml_to_json
+from preprocessing import xml_to_json, json_to_mask
 
 def get_colors(n):
     color = [''.join([random.choice('0123456789ABCDEF') for j in range(6)])
@@ -15,16 +15,13 @@ def get_colors(n):
 
 def draw_overlay(img, data):
 	print(json.dumps(data, indent=4))
-
 	num_types = sum([len(data['xml'][region_type].keys()) for region_type in data['xml']], 0)
 	colors = get_colors(num_types)
 	color_index = 0
-
 	width = data['metadata']['width']
 	height = data['metadata']['height']
 	img = img.convert('RGBA')
 	overlay = Image.new('RGBA', (width, height), (255, 255, 255, 0))
-
 	for region_type in data['xml']:
 	    for region in data['xml'][region_type]:
 	        for shape in data['xml'][region_type][region]:
@@ -32,7 +29,6 @@ def draw_overlay(img, data):
 	            draw = ImageDraw.Draw(overlay)
 	            draw.polygon(poly, fill=tuple(list(colors[color_index]) + [200]), outline=colors[color_index])
 	        color_index += 1
-
 	img = Image.alpha_composite(img, overlay)
 	img = img.convert("RGB")
 	img.show()
@@ -59,3 +55,17 @@ scaled_data = xml_to_json(assets.XML_PATH + "/" + xml_file_name, scale(
 
 draw_overlay(img, data)
 draw_overlay(scaled_img, scaled_data)
+
+mask = json_to_mask(scaled_data)
+print("\n")
+print(mask)
+
+overlay = Image.new('RGB', (scaled_data['metadata']['width'], scaled_data['metadata']['height']), (255, 255, 255))
+colors = get_colors(len(set(mask.flatten().tolist())))
+print(overlay.size)
+print(mask.shape)
+for r in range(0, mask.shape[0]):
+    for c in range(0, mask.shape[1]):
+        if mask[r][c] >= 0:
+            overlay.putpixel((c,r), colors[(mask[r][c]+1)%len(colors)])
+overlay.show()
