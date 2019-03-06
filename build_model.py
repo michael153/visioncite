@@ -5,16 +5,20 @@ import json
 
 import numpy as np
 from PIL import Image, ImageOps
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Flatten
+from keras.layers import Conv2D, MaxPooling2D, UpSampling2D, BatchNormalization
 
-CONST_IMG_HEIGHT = 1800
-CONST_IMG_WIDTH  = 1200
+import assets
+import settings
+from preprocessing import import_image
 
 def img_to_np(img):
     arr = np.asarray(padded)
     print(arr.shape)
     return arr
 
-def pad_img(img, width=CONST_IMG_WIDTH, height=CONST_IMG_HEIGHT):
+def pad_img(img, width=settings.DESIRED_IMAGE_WIDTH, height=settings.DESIRED_IMAGE_HEIGHT):
     size = img.size
     dW = width - size[0]
     dH = height - size[1]
@@ -22,21 +26,22 @@ def pad_img(img, width=CONST_IMG_WIDTH, height=CONST_IMG_HEIGHT):
     padded = ImageOps.expand(img, padding, fill="white")
     return padded
 
-def scale_img(img, width=CONST_IMG_WIDTH, height=CONST_IMG_HEIGHT):
-    scaled = img.resize((width, height))
-    return scaled
+# def scale_img(img, width=settings.DESIRED_IMAGE_WIDTH, height=settings.DESIRED_IMAGE_HEIGHT):
+#     scaled = img.resize((width, height))
+#     return scaled
 
 
-def get_data(filename):
-    return json.load(open(os.path.join(assets.DATA_PATH, 'training/{0}.train'.format(filename)), "r"))
+def get_data_batch(filename):
+    with open(os.path.join(assets.TRAINING_PATH, filename), 'r') as f:
+        lines = [line.strip('\n') for line in f]
+    return lines
 
 """
 @param  dim         the dimensions of the images being trained on
-        data_source contains all the data to be trained on
         num_class   the number of possible labels for each pixel
                     (default = 4: title, author(s), date, publisher info)
 """
-def build_model(dim, data_source, num_class=4):
+def build_model(dim, num_class=4):
     print("Image shape: {0}".format(dim))
     flattened_dim = np.prod(np.array(dim))
     
@@ -86,24 +91,27 @@ def build_model(dim, data_source, num_class=4):
     """
     def make_convnet_model(image_dim, num_class):
         height, width = image_dim[0], image_dim[1]
+        channels = 3 #RGB
+
+        input_shape = (height, width, 3)
 
         model = Sequential()
-        model.add(Conv3D(128, kernel_size=2, activation='relu', input_shape=image_dim))
+        model.add(Conv2D(128, kernel_size=2, activation='relu', input_shape=input_shape))
         model.add(BatchNormalization())
-        model.add(MaxPooling3D(pool_size=(2,2,2), strides=(1,1,1), padding='valid'))
-        model.add(Conv3D(64, kernel_size=2, activation='relu'))
+        model.add(MaxPooling2D(pool_size=(2,2), strides=(1,1), padding='valid'))
+        model.add(Conv2D(64, kernel_size=2, activation='relu'))
         model.add(BatchNormalization())
-        model.add(MaxPooling3D(pool_size=(2,2,2), strides=(1,1,1), padding='valid'))
-        model.add(Conv3D(32, kernel_size=2, activation='relu'))
+        model.add(MaxPooling2D(pool_size=(2,2), strides=(1,1), padding='valid'))
+        model.add(Conv2D(32, kernel_size=2, activation='relu'))
         model.add(BatchNormalization())
-        model.add(MaxPooling3D(pool_size=(2,2,2), strides=(1,1,1), padding='valid'))
+        model.add(MaxPooling2D(pool_size=(2,2), strides=(1,1), padding='valid'))
         
-        model.add(UpSampling3D(size=(2,2,2)))
-        model.add(Conv3D(32, kernel_size=3, activation='relu'))
-        model.add(UpSampling3D(size=(2,2,2)))
-        model.add(Conv3D(64, kernel_size=3, activation='relu'))
-        model.add(UpSampling3D(size=(2,2,2)))
-        model.add(Conv3D(128, kernel_size=3, activation='relu'))
+        model.add(UpSampling2D(size=(2,2)))
+        model.add(Conv2D(32, kernel_size=3, activation='relu'))
+        model.add(UpSampling2D(size=(2,2)))
+        model.add(Conv2D(64, kernel_size=3, activation='relu'))
+        model.add(UpSampling2D(size=(2,2)))
+        model.add(Conv2D(128, kernel_size=3, activation='relu'))
 
         model.add(Flatten())
         flattened_dim = height*width*num_class
@@ -119,39 +127,56 @@ def build_model(dim, data_source, num_class=4):
         model.summary()
         return model
 
-    """
-    @param  training_data   array of dicts, each dict has "input" and "expected_output" keys 
-    """
-    def train(model, training_data):
-        data_size = len(training_data)
-        set1, set2 = training_data[:data_size*0.75], training_data[data_size*0.75:]
-        x_train = np.array([x["input"] for x in set1])
-        y_train = np.array([y["expected_output"] for y in set1])
-        x_test = np.array([x["input"] for x in set2])
-        y_test = np.array([y["expected_output"] for y in set2])
-        print("\n")
-        print("training_data.len", training_data.len)
-        print("x_train.shape", x_train.shape)
-        print("x_test.shape", x_test.shape)
-        print("y_train.shape", y_train.shape)
-        print("y_test.shape", y_test.shape)
-        print("\n")
-        results = model.fit(
-            x_train, y_train,
-            epochs = 2500,
-            batch_size = 1000,
-            validation_data = (x_test, y_test)
-        )
-        epoch_time = int(time.time())
-        model_directory = assets.DATA_PATH + "/ml/{0}".format(epoch_time)
-        os.mkdir(model_directory)
-        model.save_weights(model_directory + "/weights")
-        with open(model_directory + "/model_json", "w") as json:
-            json.write(model.to_json())
-        print(np.mean(results.history["val_acc"]))
+    return make_convnet_model(dim, num_class)
 
-    # model = make_simple_model(arr.len, num_class)
-    model = make_convnet_model(dim, num_class)
-    train(model, get_data(data_source))
+"""
+@param  model       the model being trained
+@param  data_batch  list of filenames to be training
+"""
+def train(model, data_batch):
+    X = []
+    Y = []
+    for file in data_batch:
+        img, mask = import_image(file)
+        X.append(img)
+        Y.append(mask.flatten())
+    X = np.array(X)
+    Y = np.array(Y)
+    x_train = X[:3*len(X)//4]
+    y_train = Y[:3*len(Y)//4]
+    x_test = X[3*len(X)//4:]
+    y_test = Y[3*len(Y)//4:]
 
-    return model;
+    print("\n")
+    print("x_train.shape", x_train.shape)
+    print("x_test.shape", x_test.shape)
+    print("x_train[0].shape", x_train[0].shape)
+    print("y_train.shape", y_train.shape)
+    print("y_test.shape", y_test.shape)
+    print("y_test[0].shape", y_test[0].shape)
+    print("\n")
+
+    results = model.fit(
+        x_train, y_train,
+        epochs = 2500,
+        batch_size = 1000,
+        validation_data = (x_test, y_test)
+    )
+
+    epoch_time = int(time.time())
+    model_directory = assets.DATA_PATH + "/ml/{0}".format(epoch_time)
+    os.mkdir(model_directory)
+    model.save_weights(model_directory + "/weights")
+    with open(model_directory + "/model_json", "w") as json:
+        json.write(model.to_json())
+    print(np.mean(results.history["val_acc"]))
+    return model
+
+
+if __name__ == "__main__":
+    data_batch = get_data_batch("test_batch.train")
+
+    print(data_batch)
+    model = build_model((settings.DESIRED_IMAGE_HEIGHT, settings.DESIRED_IMAGE_WIDTH), len(settings.LABELS))
+    print("\n\n")
+    train(model, data_batch)

@@ -1,3 +1,4 @@
+import os
 import json
 import numpy as np
 from xml.dom import minidom
@@ -5,24 +6,7 @@ from PIL import Image, ImageDraw
 from matplotlib.path import Path
 
 import assets
-
-DESIRED_IMAGE_WIDTH = 1200
-DESIRED_IMAGE_HEIGHT = 1800
-LABELS = [
-    'caption',
-    'other',
-    'page-number',
-    'credit',
-    'paragraph',
-    'footer',
-    'logo',
-    'heading',
-    'drop-capital',
-    'floating',
-    'generic_TextRegion',
-    'generic_ImageRegion',
-    'generic_GraphicRegion',
-]
+import settings
 
 def import_image(image_filename):
     """Resize an image and appropriately modify its ground truth data."
@@ -36,19 +20,22 @@ def import_image(image_filename):
         A two-tuple containing an Image of the resized image and the modified
         ground truth data for the image.
     """
-    image = Image.open(image_filename)
+    image = Image.open(os.path.join(assets.IMAGE_PATH, image_filename))
     width, height = image.size
 
     def scaling_function(point):
-        x_scale = DESIRED_IMAGE_WIDTH / width
-        y_scale = DESIRED_IMAGE_HEIGHT / height
-        return (point[0] * x_scale, point[1] * y_scale)
+        x_scale = settings.DESIRED_IMAGE_WIDTH / width
+        y_scale = settings.DESIRED_IMAGE_HEIGHT / height
+        return (int(point[0] * x_scale), int(point[1] * y_scale))
 
-    resized_image = image.resize((DESIRED_IMAGE_WIDTH, DESIRED_IMAGE_HEIGHT))
+    resized_image = image.resize((settings.DESIRED_IMAGE_WIDTH, settings.DESIRED_IMAGE_HEIGHT))
     xml_filename = image_filename[:-len(".tif")] + ".xml"
-    ground_truth_data = xml_to_json(xml_filename, scaling_function)
+    ground_truth_data = xml_to_json(os.path.join(assets.XML_PATH, xml_filename), scaling_function)
+    
+    pixels = np.copy(np.asarray(resized_image))
+    mask = json_to_mask(ground_truth_data)
 
-    return (resized_image, ground_truth_data)
+    return (pixels, mask)
 
 
 def xml_to_json(xml_source_file, lambda_func=None):
@@ -75,10 +62,8 @@ def xml_to_json(xml_source_file, lambda_func=None):
         metadata['height'] = int(meta.attributes['imageHeight'].value)
         metadata['width'] = int(meta.attributes['imageWidth'].value)
         if lambda_func:
-            metadata['width'], metadata['height'] = lambda_func(
-                (metadata['width'],
-                metadata['height'])
-            )
+            metadata['width'], metadata['height'] = (settings.DESIRED_IMAGE_WIDTH,
+                settings.DESIRED_IMAGE_HEIGHT)
         json = {}
         for t in region_types:
             regions = xmldoc.getElementsByTagName(t)
@@ -122,14 +107,18 @@ def json_to_mask(json_data):
     for region in data:
         for region_type in data[region]:
             if region_type == 'generic':
-                color = LABELS.index(region_type + "_" + region)
+                color = settings.LABELS.index(region_type + "_" + region)
             else:
-                color = LABELS.index(region_type)
+                color = settings.LABELS.index(region_type)
             for poly in data[region][region_type]:
                 poly = [tuple(p) for p in poly]
                 draw = ImageDraw.Draw(overlay)
                 draw.polygon(poly, fill=color, outline=color)
     mask = np.copy(np.asarray(overlay)).astype(int)
     mask.setflags(write = 1)
-    mask[mask == 255] = -1
-    return mask
+    mask[mask == 255] = 0
+    one_hots = np.zeros((mask.shape[0], mask.shape[1], len(settings.LABELS)))
+    for i in range(one_hots.shape[0]):
+        for j in range(one_hots.shape[1]):
+            one_hots[i][j][mask[i][j]] = 1
+    return one_hots

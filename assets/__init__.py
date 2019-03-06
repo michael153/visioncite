@@ -17,6 +17,8 @@ import os
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 DATA_PATH = PATH + "/data"
+TRAINING_PATH = DATA_PATH + "/training"
+
 SEGMENTS_PATH = PATH + "/segments"
 IMAGE_PATH = PATH + "/images"
 XML_PATH = PATH + "/xml"

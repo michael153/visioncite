@@ -5,8 +5,8 @@ from PIL import Image, ImageDraw
 from matplotlib.pyplot import cm
 import numpy as np
 
-from build_model import scale_img
-from preprocessing import xml_to_json, json_to_mask
+# from build_model import scale_img
+from preprocessing import import_image, xml_to_json, json_to_mask
 
 def get_colors(n):
     color = [''.join([random.choice('0123456789ABCDEF') for j in range(6)])
@@ -35,37 +35,45 @@ def draw_overlay(img, data):
 	print(num_types)
 
 
-CONST_IMG_HEIGHT = 1800
-CONST_IMG_WIDTH  = 1200
+CONST_IMG_HEIGHT = 1350
+CONST_IMG_WIDTH  = 900
 
-scale =  lambda cur: lambda new: lambda p: (int(p[0]*new[0]/cur[0]), int(p[1]*new[1]/cur[1]))
+# scale =  lambda cur: lambda new: lambda p: (int(p[0]*new[0]/cur[0]), int(p[1]*new[1]/cur[1]))
 
 file_name = '00000086'
 xml_file_name = file_name + '.xml'
 img_file_name = file_name + '.tif'
 
-data = xml_to_json(assets.XML_PATH + "/" + xml_file_name)
-img = Image.open(assets.IMAGE_PATH + "/" + img_file_name)
 
-scaled_img = scale_img(img, width=CONST_IMG_WIDTH, height=CONST_IMG_HEIGHT)
-scaled_data = xml_to_json(assets.XML_PATH + "/" + xml_file_name, scale(
-	(data['metadata']['width'], data['metadata']['height']))
-	((CONST_IMG_WIDTH, CONST_IMG_HEIGHT))
-)
+img, mask = import_image(img_file_name)
 
-draw_overlay(img, data)
-draw_overlay(scaled_img, scaled_data)
-
-mask = json_to_mask(scaled_data)
-print("\n")
-print(mask)
-
-overlay = Image.new('RGB', (scaled_data['metadata']['width'], scaled_data['metadata']['height']), (255, 255, 255))
-colors = get_colors(len(set(mask.flatten().tolist())))
-print(overlay.size)
+print(img.shape)
+# print(img)
+# print("\n\n")
 print(mask.shape)
-for r in range(0, mask.shape[0]):
-    for c in range(0, mask.shape[1]):
-        if mask[r][c] >= 0:
-            overlay.putpixel((c,r), colors[(mask[r][c]+1)%len(colors)])
-overlay.show()
+
+# data = xml_to_json(assets.XML_PATH + "/" + xml_file_name)
+# img = Image.open(assets.IMAGE_PATH + "/" + img_file_name)
+
+# scaled_img = scale_img(img, width=CONST_IMG_WIDTH, height=CONST_IMG_HEIGHT)
+# scaled_data = xml_to_json(assets.XML_PATH + "/" + xml_file_name, scale(
+# 	(data['metadata']['width'], data['metadata']['height']))
+# 	((CONST_IMG_WIDTH, CONST_IMG_HEIGHT))
+# )
+
+# draw_overlay(img, data)
+# draw_overlay(scaled_img, scaled_data)
+
+# mask = json_to_mask(scaled_data)
+# print("\n")
+# print(mask)
+
+# overlay = Image.new('RGB', (scaled_data['metadata']['width'], scaled_data['metadata']['height']), (255, 255, 255))
+# colors = get_colors(len(set(mask.flatten().tolist())))
+# print(overlay.size)
+# print(mask.shape)
+# for r in range(0, mask.shape[0]):
+#     for c in range(0, mask.shape[1]):
+#         if mask[r][c] >= 0:
+#             overlay.putpixel((c,r), colors[(mask[r][c]+1)%len(colors)])
+# overlay.show()
