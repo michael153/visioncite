@@ -1,5 +1,6 @@
 DESIRED_IMAGE_HEIGHT = 900
 DESIRED_IMAGE_WIDTH  = 600
+
 LABELS = [
     'NONE',
     'caption',
@@ -16,3 +17,6 @@ LABELS = [
     'generic_ImageRegion',
     'generic_GraphicRegion',
 ]
+
+# This can always be left intact
+DESIRED_RESOLUTION = (DESIRED_IMAGE_WIDTH, DESIRED_IMAGE_HEIGHT)
