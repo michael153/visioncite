@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<pcGts xmlns="http://schema.primaresearch.org/PAGE/gts/pagecontent/2009-03-16" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schema.primaresearch.org/PAGE/gts/pagecontent/2009-03-16 http://schema.primaresearch.org/PAGE/gts/pagecontent/2009-03-16/pagecontent.xsd">
+  <pcMetadata>
+    <pcCreator/>
+    <pcCreated>2009-11-25T12:31:48</pcCreated>
+    <pcLastChange>2009-11-25T12:31:48</pcLastChange>
+    <pcComments/>
+  </pcMetadata>
+  <page image_filename="ta00053c.tif" image_width="2262" image_height="3207">
+    <text_region id="r0" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Heading" txt_colour="Black" txt_reverse_video="No" txt_indented="No" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <text_equiv><unicode></unicode></text_equiv>
+      <coords>
+        <point x="42" y="115"/>
+        <point x="795" y="115"/>
+        <point x="795" y="137"/>
+        <point x="42" y="137"/>
+      </coords>
+    </text_region>
+    <text_region id="r1" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Page_Number" txt_colour="Black" txt_reverse_video="No" txt_indented="No" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <text_equiv><unicode></unicode></text_equiv>
+      <coords>
+        <point x="2088" y="115"/>
+        <point x="2144" y="115"/>
+        <point x="2144" y="137"/>
+        <point x="2088" y="137"/>
+      </coords>
+    </text_region>
+  </page>
+</pcGts>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PcGts xmlns="http://schema.primaresearch.org/PAGE/gts/pagecontent/2010-03-19" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schema.primaresearch.org/PAGE/gts/pagecontent/2010-03-19 http://schema.primaresearch.org/PAGE/gts/pagecontent/2010-03-19/pagecontent.xsd" pcGtsId="pc-00000671bw">
+	<Metadata>
+	<Creator>PRImA Research</Creator>
+	<Created>2009-11-11T10:42:04</Created>
+	<LastChange>2010-04-23T15:18:45</LastChange></Metadata>
+	<Page imageFilename="00000671bw.tif" imageWidth="2432" imageHeight="3493">
+	<TextRegion id="r0" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="paragraph" textColour="black" reverseVideo="false" indented="false" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="1138" y="324"/>
+	<Point x="1138" y="1255"/>
+	<Point x="233" y="1255"/>
+	<Point x="233" y="324"/></Coords></TextRegion>
+	<TextRegion id="r1" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="paragraph" textColour="black" reverseVideo="false" indented="false" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="2130" y="331"/>
+	<Point x="2130" y="1782"/>
+	<Point x="1218" y="1782"/>
+	<Point x="1218" y="331"/></Coords></TextRegion>
+	<NoiseRegion id="r2">
+	<Coords>
+	<Point x="212" y="147"/>
+	<Point x="212" y="155"/>
+	<Point x="205" y="155"/>
+	<Point x="205" y="147"/></Coords></NoiseRegion>
+	<NoiseRegion id="r3">
+	<Coords>
+	<Point x="266" y="279"/>
+	<Point x="266" y="285"/>
+	<Point x="258" y="285"/>
+	<Point x="258" y="279"/></Coords></NoiseRegion>
+	<ImageRegion id="r4" colourDepth="bilevel" orientation="0.00000" embText="true" bgColour="white">
+	<Coords>
+	<Point x="1122" y="1300"/>
+	<Point x="1122" y="2570"/>
+	<Point x="234" y="2570"/>
+	<Point x="234" y="1300"/></Coords></ImageRegion>
+	<TextRegion id="r5" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="caption" textColour="black" reverseVideo="false" indented="false" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="1121" y="2687"/>
+	<Point x="1121" y="2762"/>
+	<Point x="223" y="2762"/>
+	<Point x="223" y="2687"/></Coords></TextRegion>
+	<TextRegion id="r6" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="page-number" textColour="black" reverseVideo="false" indented="false" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="1207" y="2922"/>
+	<Point x="1207" y="2946"/>
+	<Point x="1152" y="2946"/>
+	<Point x="1152" y="2922"/></Coords></TextRegion>
+	<TextRegion id="r7" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="footer" textColour="black" reverseVideo="false" indented="false" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="1454" y="3108"/>
+	<Point x="1454" y="3171"/>
+	<Point x="61" y="3171"/>
+	<Point x="61" y="3108"/></Coords></TextRegion>
+	<NoiseRegion id="r8">
+	<Coords>
+	<Point x="1804" y="2469"/>
+	<Point x="1804" y="2485"/>
+	<Point x="1793" y="2485"/>
+	<Point x="1793" y="2469"/></Coords></NoiseRegion></Page></PcGts>

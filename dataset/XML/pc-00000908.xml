@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PcGts xmlns="http://schema.primaresearch.org/PAGE/gts/pagecontent/2010-03-19" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schema.primaresearch.org/PAGE/gts/pagecontent/2010-03-19 http://schema.primaresearch.org/PAGE/gts/pagecontent/2010-03-19/pagecontent.xsd" pcGtsId="pc-00000908">
+	<Metadata>
+	<Creator>PRImA Research</Creator>
+	<Created>2009-06-26T14:22:49</Created>
+	<LastChange>2010-04-23T15:18:20</LastChange></Metadata>
+	<Page imageFilename="00000908.tif" imageWidth="2324" imageHeight="3228">
+	<TextRegion id="r0" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="header" textColour="black" reverseVideo="false" indented="false" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="155" y="124"/>
+	<Point x="483" y="124"/>
+	<Point x="483" y="162"/>
+	<Point x="155" y="162"/></Coords></TextRegion>
+	<SeparatorRegion id="r1" orientation="0.00000" colour="black">
+	<Coords>
+	<Point x="154" y="180"/>
+	<Point x="2253" y="180"/>
+	<Point x="2253" y="187"/>
+	<Point x="154" y="187"/></Coords></SeparatorRegion>
+	<TextRegion id="r3" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="heading" textColour="black" reverseVideo="false" indented="false" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="148" y="319"/>
+	<Point x="148" y="582"/>
+	<Point x="153" y="582"/>
+	<Point x="153" y="803"/>
+	<Point x="154" y="803"/>
+	<Point x="154" y="805"/>
+	<Point x="1319" y="805"/>
+	<Point x="1319" y="874"/>
+	<Point x="1438" y="874"/>
+	<Point x="1438" y="807"/>
+	<Point x="1532" y="807"/>
+	<Point x="1532" y="546"/>
+	<Point x="1884" y="546"/>
+	<Point x="1884" y="319"/></Coords></TextRegion>
+	<TextRegion id="r5" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="paragraph" textColour="black" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="151" y="855"/>
+	<Point x="1186" y="855"/>
+	<Point x="1186" y="929"/>
+	<Point x="1228" y="929"/>
+	<Point x="1228" y="1022"/>
+	<Point x="1237" y="1022"/>
+	<Point x="1237" y="1024"/>
+	<Point x="1227" y="1024"/>
+	<Point x="1227" y="1097"/>
+	<Point x="971" y="1097"/>
+	<Point x="971" y="1156"/>
+	<Point x="149" y="1156"/>
+	<Point x="149" y="1106"/>
+	<Point x="150" y="1106"/>
+	<Point x="150" y="980"/>
+	<Point x="151" y="980"/></Coords></TextRegion>
+	<TextRegion id="r6" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="footer" textColour="black" reverseVideo="false" indented="false" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="148" y="3097"/>
+	<Point x="610" y="3097"/>
+	<Point x="610" y="3136"/>
+	<Point x="148" y="3136"/></Coords></TextRegion>
+	<SeparatorRegion id="r8" orientation="0.00000" colour="black">
+	<Coords>
+	<Point x="142" y="3045"/>
+	<Point x="2240" y="3045"/>
+	<Point x="2240" y="3053"/>
+	<Point x="142" y="3053"/></Coords></SeparatorRegion>
+	<ImageRegion id="r9" colourDepth="colour" orientation="0.00000" embText="false" bgColour="blue">
+	<Coords>
+	<Point x="144" y="1196"/>
+	<Point x="144" y="2996"/>
+	<Point x="2252" y="2996"/>
+	<Point x="2252" y="1196"/></Coords></ImageRegion></Page></PcGts>

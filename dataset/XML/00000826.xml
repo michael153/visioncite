@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<pcGts xmlns="http://schema.primaresearch.org/PAGE/gts/pagecontent/2009-03-16" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schema.primaresearch.org/PAGE/gts/pagecontent/2009-03-16 http://schema.primaresearch.org/PAGE/gts/pagecontent/2009-03-16/pagecontent.xsd">
+  <pcMetadata>
+    <pcCreator/>
+    <pcCreated>2009-06-25T12:43:22</pcCreated>
+    <pcLastChange>2009-11-27T11:22:54</pcLastChange>
+    <pcComments/>
+  </pcMetadata>
+  <page image_filename="mp00815c.tif" image_width="2359" image_height="3135">
+    <text_region id="r0" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Paragraph" txt_colour="Black" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="99" y="143"/>
+        <point x="99" y="158"/>
+        <point x="957" y="158"/>
+        <point x="957" y="143"/>
+      </coords>
+    </text_region>
+    <text_region id="r5" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Paragraph" txt_colour="Black" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="0" y="2514"/>
+        <point x="0" y="2684"/>
+      </coords>
+    </text_region>
+    <text_region id="r6" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Paragraph" txt_colour="Black" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="0" y="2514"/>
+        <point x="0" y="2684"/>
+      </coords>
+    </text_region>
+    <text_region id="r7" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Paragraph" txt_colour="Black" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="190" y="2810"/>
+        <point x="1677" y="2810"/>
+        <point x="1677" y="2837"/>
+        <point x="190" y="2837"/>
+      </coords>
+    </text_region>
+    <text_region id="r8" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Paragraph" txt_colour="Black" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="0" y="2514"/>
+        <point x="0" y="2684"/>
+      </coords>
+    </text_region>
+    <separator_region id="r9" sep_orientation="0.000000" sep_colour="Black" sep_bgcolour="White">
+      <coords>
+        <point x="1685" y="2512"/>
+        <point x="1685" y="2683"/>
+        <point x="1687" y="2683"/>
+        <point x="1687" y="2512"/>
+      </coords>
+    </separator_region>
+    <text_region id="r10" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Paragraph" txt_colour="Black" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="1804" y="2809"/>
+        <point x="1804" y="2885"/>
+        <point x="2187" y="2885"/>
+        <point x="2187" y="2809"/>
+      </coords>
+    </text_region>
+    <text_region id="r11" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Footer" txt_colour="Black" txt_reverse_video="No" txt_indented="No" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="147" y="2973"/>
+        <point x="587" y="2973"/>
+        <point x="587" y="3012"/>
+        <point x="147" y="3012"/>
+      </coords>
+    </text_region>
+    <text_region id="r12" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Footer" txt_colour="Black" txt_reverse_video="No" txt_indented="No" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="1207" y="2973"/>
+        <point x="1661" y="2973"/>
+        <point x="1661" y="3009"/>
+        <point x="1207" y="3009"/>
+      </coords>
+    </text_region>
+  </page>
+</pcGts>

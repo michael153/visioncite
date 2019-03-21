@@ -1,0 +1,235 @@
+<?xml version="1.0"?>
+<pcGts xmlns="http://schema.primaresearch.org/PAGE/gts/pagecontent/2009-03-16" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schema.primaresearch.org/PAGE/gts/pagecontent/2009-03-16 http://schema.primaresearch.org/PAGE/gts/pagecontent/2009-03-16/pagecontent.xsd">
+  <pcMetadata>
+    <pcCreator/>
+    <pcCreated>2009-06-22T14:27:14</pcCreated>
+    <pcLastChange>2009-11-26T15:44:53</pcLastChange>
+    <pcComments/>
+  </pcMetadata>
+  <page image_filename="mp00795c.tif" image_width="2390" image_height="3060">
+    <text_region id="r1" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Paragraph" txt_colour="Black" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="207" y="974"/>
+        <point x="644" y="974"/>
+        <point x="644" y="1006"/>
+        <point x="207" y="1006"/>
+      </coords>
+    </text_region>
+    <text_region id="r2" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Paragraph" txt_colour="Black" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="199" y="1025"/>
+        <point x="1631" y="1025"/>
+        <point x="1631" y="1076"/>
+        <point x="1658" y="1076"/>
+        <point x="1658" y="1112"/>
+        <point x="1243" y="1112"/>
+        <point x="1243" y="1163"/>
+        <point x="140" y="1163"/>
+        <point x="140" y="1126"/>
+        <point x="141" y="1126"/>
+        <point x="141" y="1081"/>
+        <point x="199" y="1081"/>
+      </coords>
+    </text_region>
+    <text_region id="r3" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Paragraph" txt_colour="Black" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="198" y="1177"/>
+        <point x="1604" y="1177"/>
+        <point x="1604" y="1204"/>
+        <point x="1587" y="1204"/>
+        <point x="1587" y="1256"/>
+        <point x="1530" y="1256"/>
+        <point x="1530" y="1315"/>
+        <point x="947" y="1315"/>
+        <point x="947" y="1364"/>
+        <point x="139" y="1364"/>
+        <point x="139" y="1328"/>
+        <point x="140" y="1328"/>
+        <point x="140" y="1228"/>
+        <point x="198" y="1228"/>
+      </coords>
+    </text_region>
+    <text_region id="r4" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Paragraph" txt_colour="Black" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="198" y="1378"/>
+        <point x="1018" y="1378"/>
+        <point x="1018" y="1429"/>
+        <point x="1051" y="1429"/>
+        <point x="1051" y="1460"/>
+        <point x="1037" y="1460"/>
+        <point x="1037" y="1529"/>
+        <point x="1062" y="1529"/>
+        <point x="1062" y="1557"/>
+        <point x="1020" y="1557"/>
+        <point x="1020" y="1616"/>
+        <point x="561" y="1616"/>
+        <point x="561" y="1666"/>
+        <point x="139" y="1666"/>
+        <point x="139" y="1479"/>
+        <point x="140" y="1479"/>
+        <point x="140" y="1429"/>
+        <point x="198" y="1429"/>
+      </coords>
+    </text_region>
+    <text_region id="r5" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Paragraph" txt_colour="Black" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="198" y="1680"/>
+        <point x="1029" y="1680"/>
+        <point x="1029" y="1718"/>
+        <point x="980" y="1718"/>
+        <point x="980" y="1793"/>
+        <point x="1012" y="1793"/>
+        <point x="1012" y="1833"/>
+        <point x="1312" y="1833"/>
+        <point x="1312" y="1869"/>
+        <point x="138" y="1869"/>
+        <point x="138" y="1782"/>
+        <point x="139" y="1782"/>
+        <point x="139" y="1741"/>
+        <point x="198" y="1741"/>
+      </coords>
+    </text_region>
+    <text_region id="r6" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Quote" txt_colour="Black" txt_reverse_video="No" txt_indented="No" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="1149" y="1378"/>
+        <point x="1945" y="1378"/>
+        <point x="1945" y="1480"/>
+        <point x="1989" y="1480"/>
+        <point x="1989" y="1544"/>
+        <point x="1986" y="1544"/>
+        <point x="1986" y="1645"/>
+        <point x="1736" y="1645"/>
+        <point x="1736" y="1746"/>
+        <point x="1147" y="1746"/>
+        <point x="1147" y="1698"/>
+        <point x="1150" y="1698"/>
+        <point x="1150" y="1560"/>
+        <point x="1148" y="1560"/>
+        <point x="1148" y="1479"/>
+        <point x="1149" y="1479"/>
+      </coords>
+    </text_region>
+    <text_region id="r7" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Paragraph" txt_colour="Black" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="197" y="1883"/>
+        <point x="1615" y="1883"/>
+        <point x="1615" y="1919"/>
+        <point x="1554" y="1919"/>
+        <point x="1554" y="1993"/>
+        <point x="1609" y="1993"/>
+        <point x="1609" y="2034"/>
+        <point x="1640" y="2034"/>
+        <point x="1640" y="2064"/>
+        <point x="1471" y="2064"/>
+        <point x="1471" y="2120"/>
+        <point x="138" y="2120"/>
+        <point x="138" y="1943"/>
+        <point x="197" y="1943"/>
+      </coords>
+    </text_region>
+    <text_region id="r8" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Paragraph" txt_colour="Black" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="197" y="2133"/>
+        <point x="978" y="2133"/>
+        <point x="978" y="2170"/>
+        <point x="197" y="2170"/>
+      </coords>
+    </text_region>
+    <text_region id="r9" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Paragraph" txt_colour="Black" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="197" y="2184"/>
+        <point x="1059" y="2184"/>
+        <point x="1059" y="2212"/>
+        <point x="197" y="2212"/>
+      </coords>
+    </text_region>
+    <text_region id="r10" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Paragraph" txt_colour="Black" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="196" y="2234"/>
+        <point x="1560" y="2234"/>
+        <point x="1560" y="2285"/>
+        <point x="1611" y="2285"/>
+        <point x="1611" y="2336"/>
+        <point x="1649" y="2336"/>
+        <point x="1649" y="2372"/>
+        <point x="671" y="2372"/>
+        <point x="671" y="2413"/>
+        <point x="138" y="2413"/>
+        <point x="138" y="2291"/>
+        <point x="196" y="2291"/>
+      </coords>
+    </text_region>
+    <text_region id="r12" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Paragraph" txt_colour="Black" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="195" y="2788"/>
+        <point x="1598" y="2788"/>
+        <point x="1598" y="2816"/>
+        <point x="1560" y="2816"/>
+        <point x="1560" y="2875"/>
+        <point x="556" y="2875"/>
+        <point x="556" y="2925"/>
+        <point x="137" y="2925"/>
+        <point x="137" y="2875"/>
+        <point x="136" y="2875"/>
+        <point x="136" y="2840"/>
+        <point x="195" y="2840"/>
+      </coords>
+    </text_region>
+    <graphic_region id="r13" gfx_type="Other" gfx_emb_text="No">
+      <coords>
+        <point x="590" y="2884"/>
+        <point x="630" y="2884"/>
+        <point x="630" y="2914"/>
+        <point x="590" y="2914"/>
+      </coords>
+    </graphic_region>
+    <text_region id="r14" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Footer" txt_colour="Black" txt_reverse_video="No" txt_indented="No" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="1761" y="2995"/>
+        <point x="2112" y="2995"/>
+        <point x="2112" y="3017"/>
+        <point x="1761" y="3017"/>
+      </coords>
+    </text_region>
+    <text_region id="r15" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Page_Number" txt_colour="Black" txt_reverse_video="No" txt_indented="No" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="2149" y="2985"/>
+        <point x="2200" y="2985"/>
+        <point x="2200" y="3017"/>
+        <point x="2149" y="3017"/>
+      </coords>
+    </text_region>
+    <text_region id="r16" txt_orientation="0.000" txt_reading_orientation="0.000" txt_reading_direction="Left_To_Right" txt_type="Paragraph" txt_colour="Black" txt_primary_language="English" txt_primary_script="Latin" txt_bgcolour="White">
+      <coords>
+        <point x="295" y="662"/>
+        <point x="819" y="662"/>
+        <point x="819" y="672"/>
+        <point x="1578" y="672"/>
+        <point x="1578" y="725"/>
+        <point x="1634" y="725"/>
+        <point x="1634" y="751"/>
+        <point x="1618" y="751"/>
+        <point x="1618" y="835"/>
+        <point x="1623" y="835"/>
+        <point x="1623" y="852"/>
+        <point x="1591" y="852"/>
+        <point x="1591" y="911"/>
+        <point x="924" y="911"/>
+        <point x="924" y="960"/>
+        <point x="141" y="960"/>
+        <point x="141" y="924"/>
+        <point x="141" y="924"/>
+        <point x="141" y="880"/>
+        <point x="144" y="880"/>
+        <point x="144" y="800"/>
+        <point x="141" y="800"/>
+        <point x="141" y="774"/>
+        <point x="142" y="774"/>
+        <point x="142" y="724"/>
+        <point x="142" y="724"/>
+        <point x="142" y="666"/>
+        <point x="295" y="666"/>
+      </coords>
+    </text_region>
+  </page>
+</pcGts>

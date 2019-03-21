@@ -1,0 +1,17 @@
+PRImA Layout Analysis Dataset
+
+Use of the dataset is strictly for personal research and not for any commercial use. 
+Reproduction and/or redistribution of any part of the dataset is not allowed. 
+See also the Copyright section below.
+
+Copyright
+Scanned pages (all images) are available in the dataset exclusively for 
+personal research and, in general, must not be reproduced in any form 
+(even in scientific publications) without the permission of the 
+copyright holder(s). Information on the copyright holder(s) is displayed 
+for every page image in the dataset in order to make it possible to identify 
+who to seek permission from.
+We are working towards securing permission from publishers so that researchers 
+can freely use images and reproduce them in scientific publications. 
+Wherever such permission is available, it is indicated in the metadata and 
+displayed for each page image.

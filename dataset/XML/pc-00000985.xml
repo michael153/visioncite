@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PcGts xmlns="http://schema.primaresearch.org/PAGE/gts/pagecontent/2010-03-19" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schema.primaresearch.org/PAGE/gts/pagecontent/2010-03-19 http://schema.primaresearch.org/PAGE/gts/pagecontent/2010-03-19/pagecontent.xsd" pcGtsId="pc-00000985">
+	<Metadata>
+	<Creator>PRImA Research</Creator>
+	<Created>2009-06-30T10:10:47</Created>
+	<LastChange>2010-04-23T15:18:21</LastChange></Metadata>
+	<Page imageFilename="00000985.tif" imageWidth="2316" imageHeight="3235">
+	<TextRegion id="r0" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="paragraph" textColour="black" reverseVideo="false" indented="false" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="227" y="253"/>
+	<Point x="1082" y="253"/>
+	<Point x="1082" y="305"/>
+	<Point x="1129" y="305"/>
+	<Point x="1129" y="357"/>
+	<Point x="1191" y="357"/>
+	<Point x="1191" y="397"/>
+	<Point x="1123" y="397"/>
+	<Point x="1123" y="472"/>
+	<Point x="1192" y="472"/>
+	<Point x="1192" y="485"/>
+	<Point x="1186" y="485"/>
+	<Point x="1186" y="547"/>
+	<Point x="1054" y="547"/>
+	<Point x="1054" y="633"/>
+	<Point x="1058" y="633"/>
+	<Point x="1058" y="652"/>
+	<Point x="654" y="652"/>
+	<Point x="654" y="717"/>
+	<Point x="258" y="717"/>
+	<Point x="258" y="565"/>
+	<Point x="259" y="565"/>
+	<Point x="259" y="397"/>
+	<Point x="258" y="397"/>
+	<Point x="258" y="287"/>
+	<Point x="227" y="287"/></Coords></TextRegion>
+	<TextRegion id="r1" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="paragraph" textColour="black" reverseVideo="false" indented="false" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="1249" y="253"/>
+	<Point x="2211" y="253"/>
+	<Point x="2211" y="298"/>
+	<Point x="2207" y="298"/>
+	<Point x="2207" y="357"/>
+	<Point x="2208" y="357"/>
+	<Point x="2208" y="408"/>
+	<Point x="2209" y="408"/>
+	<Point x="2209" y="454"/>
+	<Point x="2208" y="454"/>
+	<Point x="2208" y="512"/>
+	<Point x="2210" y="512"/>
+	<Point x="2210" y="559"/>
+	<Point x="1446" y="559"/>
+	<Point x="1446" y="611"/>
+	<Point x="1249" y="611"/>
+	<Point x="1249" y="507"/>
+	<Point x="1248" y="507"/>
+	<Point x="1248" y="460"/>
+	<Point x="1249" y="460"/></Coords></TextRegion>
+	<TextRegion id="r2" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="paragraph" textColour="black" reverseVideo="false" indented="false" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="1299" y="617"/>
+	<Point x="2209" y="617"/>
+	<Point x="2209" y="664"/>
+	<Point x="2208" y="664"/>
+	<Point x="2208" y="717"/>
+	<Point x="1248" y="717"/>
+	<Point x="1248" y="684"/>
+	<Point x="1299" y="684"/></Coords></TextRegion>
+	<TextRegion id="r3" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="heading" textColour="black" reverseVideo="false" indented="false" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="227" y="779"/>
+	<Point x="741" y="779"/>
+	<Point x="741" y="809"/>
+	<Point x="439" y="809"/>
+	<Point x="439" y="861"/>
+	<Point x="225" y="861"/>
+	<Point x="225" y="830"/>
+	<Point x="227" y="830"/></Coords></TextRegion>
+	<GraphicRegion id="r4" type="other" embText="true">
+	<Coords>
+	<Point x="876" y="752"/>
+	<Point x="876" y="1754"/>
+	<Point x="2206" y="1754"/>
+	<Point x="2206" y="752"/></Coords></GraphicRegion>
+	<TextRegion id="r5" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="caption" textColour="black" reverseVideo="false" indented="false" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="1076" y="1873"/>
+	<Point x="1194" y="1873"/>
+	<Point x="1194" y="1911"/>
+	<Point x="1199" y="1911"/>
+	<Point x="1199" y="1935"/>
+	<Point x="1194" y="1935"/>
+	<Point x="1194" y="1973"/>
+	<Point x="942" y="1973"/>
+	<Point x="942" y="1935"/>
+	<Point x="913" y="1935"/>
+	<Point x="913" y="1911"/>
+	<Point x="1076" y="1911"/></Coords></TextRegion>
+	<TextRegion id="r6" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="paragraph" textColour="black" reverseVideo="false" indented="false" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="225" y="879"/>
+	<Point x="842" y="879"/>
+	<Point x="842" y="930"/>
+	<Point x="843" y="930"/>
+	<Point x="843" y="982"/>
+	<Point x="844" y="982"/>
+	<Point x="844" y="1027"/>
+	<Point x="842" y="1027"/>
+	<Point x="842" y="1139"/>
+	<Point x="843" y="1139"/>
+	<Point x="843" y="1226"/>
+	<Point x="842" y="1226"/>
+	<Point x="842" y="1331"/>
+	<Point x="692" y="1331"/>
+	<Point x="692" y="1395"/>
+	<Point x="225" y="1395"/>
+	<Point x="225" y="1244"/>
+	<Point x="226" y="1244"/>
+	<Point x="226" y="1186"/>
+	<Point x="225" y="1186"/>
+	<Point x="225" y="1133"/>
+	<Point x="224" y="1133"/>
+	<Point x="224" y="1087"/>
+	<Point x="226" y="1087"/>
+	<Point x="226" y="1027"/>
+	<Point x="224" y="1027"/>
+	<Point x="224" y="982"/>
+	<Point x="226" y="982"/>
+	<Point x="226" y="924"/>
+	<Point x="225" y="924"/></Coords></TextRegion>
+	<TextRegion id="r7" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="paragraph" textColour="black" reverseVideo="false" indented="false" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="277" y="1401"/>
+	<Point x="840" y="1401"/>
+	<Point x="840" y="1453"/>
+	<Point x="842" y="1453"/>
+	<Point x="842" y="1608"/>
+	<Point x="843" y="1608"/>
+	<Point x="843" y="1655"/>
+	<Point x="842" y="1655"/>
+	<Point x="842" y="1766"/>
+	<Point x="843" y="1766"/>
+	<Point x="843" y="1813"/>
+	<Point x="841" y="1813"/>
+	<Point x="841" y="1872"/>
+	<Point x="842" y="1872"/>
+	<Point x="842" y="2021"/>
+	<Point x="841" y="2021"/>
+	<Point x="841" y="2132"/>
+	<Point x="1192" y="2132"/>
+	<Point x="1192" y="2288"/>
+	<Point x="1193" y="2288"/>
+	<Point x="1193" y="2334"/>
+	<Point x="1192" y="2334"/>
+	<Point x="1192" y="2446"/>
+	<Point x="1194" y="2446"/>
+	<Point x="1194" y="2492"/>
+	<Point x="1193" y="2492"/>
+	<Point x="1193" y="2544"/>
+	<Point x="1192" y="2544"/>
+	<Point x="1192" y="2601"/>
+	<Point x="1193" y="2601"/>
+	<Point x="1193" y="2648"/>
+	<Point x="1192" y="2648"/>
+	<Point x="1192" y="2705"/>
+	<Point x="1193" y="2705"/>
+	<Point x="1193" y="2739"/>
+	<Point x="1148" y="2739"/>
+	<Point x="1148" y="2804"/>
+	<Point x="225" y="2804"/>
+	<Point x="225" y="2699"/>
+	<Point x="224" y="2699"/>
+	<Point x="224" y="2654"/>
+	<Point x="225" y="2654"/>
+	<Point x="225" y="2387"/>
+	<Point x="224" y="2387"/>
+	<Point x="224" y="2236"/>
+	<Point x="225" y="2236"/>
+	<Point x="225" y="1969"/>
+	<Point x="224" y="1969"/>
+	<Point x="224" y="1872"/>
+	<Point x="225" y="1872"/>
+	<Point x="225" y="1519"/>
+	<Point x="228" y="1519"/>
+	<Point x="228" y="1467"/>
+	<Point x="277" y="1467"/></Coords></TextRegion>
+	<TextRegion id="r8" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="paragraph" textColour="black" reverseVideo="false" indented="false" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="1246" y="1871"/>
+	<Point x="2207" y="1871"/>
+	<Point x="2207" y="1918"/>
+	<Point x="2206" y="1918"/>
+	<Point x="2206" y="1989"/>
+	<Point x="2209" y="1989"/>
+	<Point x="2209" y="2021"/>
+	<Point x="2208" y="2021"/>
+	<Point x="2208" y="2229"/>
+	<Point x="2207" y="2229"/>
+	<Point x="2207" y="2288"/>
+	<Point x="2209" y="2288"/>
+	<Point x="2209" y="2334"/>
+	<Point x="2207" y="2334"/>
+	<Point x="2207" y="2439"/>
+	<Point x="2206" y="2439"/>
+	<Point x="2206" y="2498"/>
+	<Point x="2207" y="2498"/>
+	<Point x="2207" y="2543"/>
+	<Point x="2206" y="2543"/>
+	<Point x="2206" y="2601"/>
+	<Point x="2207" y="2601"/>
+	<Point x="2207" y="2635"/>
+	<Point x="2098" y="2635"/>
+	<Point x="2098" y="2700"/>
+	<Point x="1246" y="2700"/>
+	<Point x="1246" y="2654"/>
+	<Point x="1247" y="2654"/>
+	<Point x="1247" y="2596"/>
+	<Point x="1246" y="2596"/>
+	<Point x="1246" y="2549"/>
+	<Point x="1247" y="2549"/>
+	<Point x="1247" y="2492"/>
+	<Point x="1246" y="2492"/>
+	<Point x="1246" y="2446"/>
+	<Point x="1247" y="2446"/>
+	<Point x="1247" y="2387"/>
+	<Point x="1246" y="2387"/>
+	<Point x="1246" y="2340"/>
+	<Point x="1247" y="2340"/>
+	<Point x="1247" y="2021"/>
+	<Point x="1246" y="2021"/>
+	<Point x="1246" y="1975"/>
+	<Point x="1247" y="1975"/>
+	<Point x="1247" y="1918"/>
+	<Point x="1246" y="1918"/></Coords></TextRegion>
+	<TextRegion id="r9" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="paragraph" textColour="black" reverseVideo="false" indented="false" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="1297" y="2705"/>
+	<Point x="2206" y="2705"/>
+	<Point x="2206" y="2757"/>
+	<Point x="2207" y="2757"/>
+	<Point x="2207" y="2809"/>
+	<Point x="2208" y="2809"/>
+	<Point x="2208" y="2856"/>
+	<Point x="2207" y="2856"/>
+	<Point x="2207" y="2908"/>
+	<Point x="2206" y="2908"/>
+	<Point x="2206" y="2956"/>
+	<Point x="2205" y="2956"/>
+	<Point x="2205" y="3019"/>
+	<Point x="2206" y="3019"/>
+	<Point x="2206" y="3066"/>
+	<Point x="1246" y="3066"/>
+	<Point x="1246" y="3034"/>
+	<Point x="1249" y="3034"/>
+	<Point x="1249" y="2949"/>
+	<Point x="1246" y="2949"/>
+	<Point x="1246" y="2914"/>
+	<Point x="1247" y="2914"/>
+	<Point x="1247" y="2804"/>
+	<Point x="1246" y="2804"/>
+	<Point x="1246" y="2772"/>
+	<Point x="1297" y="2772"/></Coords></TextRegion>
+	<TextRegion id="r10" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="paragraph" textColour="black" reverseVideo="false" indented="false" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="276" y="2810"/>
+	<Point x="1192" y="2810"/>
+	<Point x="1192" y="2862"/>
+	<Point x="1193" y="2862"/>
+	<Point x="1193" y="2908"/>
+	<Point x="1191" y="2908"/>
+	<Point x="1191" y="2970"/>
+	<Point x="1194" y="2970"/>
+	<Point x="1194" y="3014"/>
+	<Point x="1193" y="3014"/>
+	<Point x="1193" y="3066"/>
+	<Point x="225" y="3066"/>
+	<Point x="225" y="3019"/>
+	<Point x="226" y="3019"/>
+	<Point x="226" y="2961"/>
+	<Point x="225" y="2961"/>
+	<Point x="225" y="2863"/>
+	<Point x="276" y="2863"/></Coords></TextRegion>
+	<TextRegion id="r11" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="footer" textColour="black" reverseVideo="false" indented="false" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="350" y="3153"/>
+	<Point x="1076" y="3153"/>
+	<Point x="1076" y="3175"/>
+	<Point x="350" y="3175"/></Coords></TextRegion>
+	<TextRegion id="r12" orientation="0.00000" readingOrientation="0.00000" readingDirection="left-to-right" type="page-number" textColour="black" reverseVideo="false" indented="false" primaryLanguage="English" primaryScript="Latin" bgColour="white">
+	<Coords>
+	<Point x="226" y="3145"/>
+	<Point x="270" y="3145"/>
+	<Point x="270" y="3170"/>
+	<Point x="226" y="3170"/></Coords></TextRegion></Page></PcGts>

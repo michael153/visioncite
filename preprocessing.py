@@ -1,17 +1,16 @@
+"""Implement functions for loading and saving training data."""
 import os
 import json
-import numpy as np
 from xml.dom import minidom
+
+import numpy as np
 from PIL import Image, ImageDraw
-from matplotlib.path import Path
 
 import assets
 import settings
 
-def import_image(image_filename):
+def import_image(image_filename, image_extension=".jpeg", ground_truth_extension=".json"):
     """Resize an image and appropriately modify its ground truth data."
-
-    The image must be a TIF files.
 
     Arguments:
         image_filename: The name of an image file
@@ -20,6 +19,8 @@ def import_image(image_filename):
         A two-tuple containing an Image of the resized image and the modified
         ground truth data for the image.
     """
+    assert ground_truth_extension in {".json", ".xml"}
+
     image = Image.open(os.path.join(assets.IMAGE_PATH, image_filename))
     width, height = image.size
 
@@ -29,9 +30,22 @@ def import_image(image_filename):
         return (int(point[0] * x_scale), int(point[1] * y_scale))
 
     resized_image = image.resize((settings.DESIRED_IMAGE_WIDTH, settings.DESIRED_IMAGE_HEIGHT))
-    xml_filename = image_filename[:-len(".tif")] + ".xml"
-    ground_truth_data = xml_to_json(os.path.join(assets.XML_PATH, xml_filename), scaling_function)
-    
+
+    ground_truth_filename = image_filename[:-len(image_extension)]
+    ground_truth_local_path = ground_truth_filename + ground_truth_extension
+
+    if ground_truth_extension == ".json":
+        ground_truth_path = os.path.join(assets.JSON_PATH, ground_truth_local_path)
+        if not os.path.isfile(ground_truth_path):
+            return None, None
+        with open(ground_truth_path) as ground_truth:
+            ground_truth_data = json.load(ground_truth)
+    elif ground_truth_extension == ".xml":
+        ground_truth_path = os.path.join(assets.XML_PATH, ground_truth_local_path)
+        if not os.path.isfile(ground_truth_path):
+            return None, None
+        ground_truth_data = xml_to_json(ground_truth_path, scaling_function)
+
     pixels = np.copy(np.asarray(resized_image))
     mask = json_to_mask(ground_truth_data)
 
@@ -94,8 +108,8 @@ def xml_to_json(xml_source_file, lambda_func=None):
 
 def json_to_mask(json_data):
     """Generates the label mask for an image given its ground truth JSON data.
-    
-    Arguments: 
+
+    Arguments:
         json_data: The ground truth data of an image in JSON form
 
     Returns:
@@ -111,11 +125,13 @@ def json_to_mask(json_data):
             else:
                 color = settings.LABELS.index(region_type)
             for poly in data[region][region_type]:
+                if not poly:
+                    continue
                 poly = [tuple(p) for p in poly]
                 draw = ImageDraw.Draw(overlay)
                 draw.polygon(poly, fill=color, outline=color)
     mask = np.copy(np.asarray(overlay)).astype(int)
-    mask.setflags(write = 1)
+    mask.setflags(write=1)
     mask[mask == 255] = 0
     one_hots = np.zeros((mask.shape[0], mask.shape[1], len(settings.LABELS)))
     for i in range(one_hots.shape[0]):

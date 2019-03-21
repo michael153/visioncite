@@ -20,5 +20,6 @@ DATA_PATH = PATH + "/data"
 TRAINING_PATH = DATA_PATH + "/training"
 
 SEGMENTS_PATH = PATH + "/segments"
-IMAGE_PATH = PATH + "/images"
-XML_PATH = PATH + "/xml"
+IMAGE_PATH = DATA_PATH + "/images"
+XML_PATH = DATA_PATH + "/xml"
+JSON_PATH = DATA_PATH + "/json"

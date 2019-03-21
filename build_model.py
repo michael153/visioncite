@@ -44,7 +44,7 @@ def get_data_batch(filename):
 def build_model(dim, num_class=4):
     print("Image shape: {0}".format(dim))
     flattened_dim = np.prod(np.array(dim))
-    
+
     """
     @param  d           integer equal to m x n, where m and n are the
                         dimensions of the images being passed into the
@@ -105,7 +105,7 @@ def build_model(dim, num_class=4):
         model.add(Conv2D(32, kernel_size=2, activation='relu'))
         model.add(BatchNormalization())
         model.add(MaxPooling2D(pool_size=(2,2), strides=(1,1), padding='valid'))
-        
+
         model.add(UpSampling2D(size=(2,2)))
         model.add(Conv2D(32, kernel_size=3, activation='relu'))
         model.add(UpSampling2D(size=(2,2)))
@@ -138,8 +138,9 @@ def train(model, data_batch):
     Y = []
     for file in data_batch:
         img, mask = import_image(file)
-        X.append(img)
-        Y.append(mask.flatten())
+        if mask is not None:
+            X.append(img)
+            Y.append(mask.flatten())
     X = np.array(X)
     Y = np.array(Y)
     x_train = X[:3*len(X)//4]
@@ -174,7 +175,7 @@ def train(model, data_batch):
 
 
 if __name__ == "__main__":
-    data_batch = get_data_batch("test_batch.train")
+    data_batch = get_data_batch("32020191045.train")
 
     print(data_batch)
     model = build_model((settings.DESIRED_IMAGE_HEIGHT, settings.DESIRED_IMAGE_WIDTH), len(settings.LABELS))

@@ -16,6 +16,8 @@ LABELS = [
     'generic_TextRegion',
     'generic_ImageRegion',
     'generic_GraphicRegion',
+    'header',
+    'punch-hole'
 ]
 
 # This can always be left intact
