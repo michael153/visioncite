@@ -175,7 +175,7 @@ def train(model, data_batch):
 
 
 if __name__ == "__main__":
-    data_batch = get_data_batch("32020191045.train")
+    data_batch = get_data_batch("33020190233.train")
 
     print(data_batch)
     model = build_model((settings.DESIRED_IMAGE_HEIGHT, settings.DESIRED_IMAGE_WIDTH), len(settings.LABELS))
