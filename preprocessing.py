@@ -120,10 +120,11 @@ def json_to_mask(json_data):
     data = json_data['xml']
     for region in data:
         for region_type in data[region]:
-            if region_type == 'generic':
-                color = settings.LABELS.index(region_type + "_" + region)
-            else:
-                color = settings.LABELS.index(region_type)
+            # if region_type == 'generic':
+                # color = settings.LABELS.index(region_type + "_" + region)
+            # else:
+                # color = settings.LABELS.index(region_type)
+            color = settings.LABELS.index(region_type)
             for poly in data[region][region_type]:
                 if not poly:
                     continue

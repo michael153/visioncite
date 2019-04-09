@@ -93,7 +93,7 @@ def build_model(dim, num_class=4):
         height, width = image_dim[0], image_dim[1]
         channels = 3 #RGB
 
-        input_shape = (height, width, 3)
+        input_shape = (height, width, channels)
 
         model = Sequential()
         model.add(Conv2D(128, kernel_size=2, activation='relu', input_shape=input_shape))
@@ -113,9 +113,11 @@ def build_model(dim, num_class=4):
         model.add(UpSampling2D(size=(2,2)))
         model.add(Conv2D(128, kernel_size=3, activation='relu'))
 
-        model.add(Flatten())
-        flattened_dim = height*width*num_class
-        model.add(Dense(flattened_dim, activation='softmax'))
+        model.add(Conv2D(num_class, kernel_size=3, activation='softmax'))
+
+        # model.add(Flatten())
+        # flattened_dim = height*width*num_class
+        # model.add(Dense(flattened_dim, activation='softmax'))
 
         start = time.time()
         model.compile(
@@ -140,7 +142,7 @@ def train(model, data_batch):
         img, mask = import_image(file)
         if mask is not None:
             X.append(img)
-            Y.append(mask.flatten())
+            Y.append(mask)
     X = np.array(X)
     Y = np.array(Y)
     x_train = X[:3*len(X)//4]
@@ -159,8 +161,8 @@ def train(model, data_batch):
 
     results = model.fit(
         x_train, y_train,
-        epochs = 2500,
-        batch_size = 1000,
+        epochs = 100,
+        batch_size = 64,
         validation_data = (x_test, y_test)
     )
 
