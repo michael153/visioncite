@@ -124,7 +124,10 @@ def json_to_mask(json_data):
                 # color = settings.LABELS.index(region_type + "_" + region)
             # else:
                 # color = settings.LABELS.index(region_type)
-            color = settings.LABELS.index(region_type)
+            if region_type in settings.LABELS:
+                color = settings.LABELS.index(region_type)
+            else:
+                color = 0
             for poly in data[region][region_type]:
                 if not poly:
                     continue
