@@ -13,7 +13,7 @@ from preprocessing import import_image
 def main():
     image_list_filename = sys.argv[1]
     image_list_path = os.path.join(assets.TRAINING_PATH, image_list_filename)
-    image_filenames = get_image_filenames(path_to_image_filenames_list)
+    image_filenames = get_image_filenames(image_list_path)
     image_dimensions = settings.IMAGE_HEIGHT, settings.IMAGE_WIDTH
     labels_count = len(settings.LABELS)
     model = build_model(image_dimensions, labels_count)
