@@ -1,12 +1,8 @@
 import os
 import sys
-import time
-import json
 
 import numpy as np
-from PIL import Image, ImageOps
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D, UpSampling2D, BatchNormalization
 
 import assets
@@ -14,115 +10,107 @@ import settings
 from preprocessing import import_image
 
 
-def get_data_batch(filename):
-    with open(os.path.join(assets.TRAINING_PATH, filename), 'r') as f:
-        lines = [line.strip('\n') for line in f]
-    return lines
+def main():
+    path_to_image_filenames_list = sys.argv[1]
+    image_filenames = get_image_filenames(path_to_image_filenames_list)
+    image_dimensions = settings.IMAGE_HEIGHT, settings.IMAGE_WIDTH
+    labels_count = len(settings.LABELS)
+    model = build_model(image_dimensions, labels_count)
+    train(model, image_filenames)
+    model_directory = sys.argv[2]
+    save_model_to_directory(model, model_directory)
 
-"""
-@param  dim         the dimensions of the images being trained on
-        num_class   the number of possible labels for each pixel
-                    (default = 4: title, author(s), date, publisher info)
-"""
-def build_model(dim, num_class=4):
-    print("Image shape: {0}".format(dim))
-    flattened_dim = np.prod(np.array(dim))
 
-    """
-    SegNet-Like Conv Net Model that takes 3D image input (RGB)
-    @param  image_dim   a tuple (h, w, 3) or (h, w) that represents the
-                        dimensions of the images being passed in
-    @param  num_class   number of possible labels for each pixel
-    @return model       given an image, model returns num_class
-                        probabilities for each pixel
-    """
-    def make_convnet_model(image_dim, num_class):
-        height, width = image_dim[0], image_dim[1]
-        channels = 3 #RGB
+def get_image_filenames(filepath):
+    with open(filepath, 'r') as file:
+        image_filenames = [filename.strip('\n') for filename in file]
+    return image_filenames
 
-        input_shape = (height, width, channels)
 
-        model = Sequential()
-        model.add(Conv2D(128, kernel_size=2, activation='relu', input_shape=input_shape))
-        model.add(BatchNormalization())
-        model.add(MaxPooling2D(pool_size=(2,2), strides=(1,1), padding='valid'))
-        model.add(Conv2D(64, kernel_size=2, activation='relu'))
-        model.add(BatchNormalization())
-        model.add(MaxPooling2D(pool_size=(2,2), strides=(1,1), padding='valid'))
-        model.add(Conv2D(32, kernel_size=2, activation='relu'))
-        model.add(BatchNormalization())
-        model.add(MaxPooling2D(pool_size=(2,2), strides=(1,1), padding='valid'))
+def build_model(image_dimensions, labels_count):
+    height, width = image_dimensions[0], image_dimensions[1]
+    channels = 3  #RGB
+    input_shape = (height, width, channels)
 
-        model.add(UpSampling2D(size=(2,2)))
-        model.add(Conv2D(32, kernel_size=3, activation='relu'))
-        model.add(UpSampling2D(size=(2,2)))
-        model.add(Conv2D(64, kernel_size=3, activation='relu'))
-        model.add(UpSampling2D(size=(2,2)))
-        model.add(Conv2D(128, kernel_size=3, activation='relu'))
+    model = Sequential()
+    model.add(
+        Conv2D(128, kernel_size=2, activation='relu', input_shape=input_shape))
+    model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1), padding='valid'))
+    model.add(Conv2D(64, kernel_size=2, activation='relu'))
+    model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1), padding='valid'))
+    model.add(Conv2D(32, kernel_size=2, activation='relu'))
+    model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1), padding='valid'))
 
-        model.add(Conv2D(num_class, kernel_size=3, activation='softmax'))
+    model.add(UpSampling2D(size=(2, 2)))
+    model.add(Conv2D(32, kernel_size=3, activation='relu'))
+    model.add(UpSampling2D(size=(2, 2)))
+    model.add(Conv2D(64, kernel_size=3, activation='relu'))
+    model.add(UpSampling2D(size=(2, 2)))
+    model.add(Conv2D(128, kernel_size=3, activation='relu'))
 
-        start = time.time()
-        model.compile(
-            optimizer='adam',
-            loss='categorical_crossentropy',
-            metrics=['accuracy']
-        )
-        print("Model Compilation Time: ", time.time() - start)
-        model.summary()
-        return model
+    model.add(Conv2D(labels_count, kernel_size=3, activation='softmax'))
 
-    return make_convnet_model(dim, num_class)
+    model.compile(optimizer='adam',
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
+    model.summary()
 
-"""
-@param  model       the model being trained
-@param  data_batch  list of filenames to be training
-"""
-def train(model, data_batch):
-    X = []
-    Y = []
-    for file in data_batch:
-        img, mask = import_image(file)
-        if mask is not None:
-            X.append(img)
-            Y.append(mask)
-    X = np.array(X)
-    Y = np.array(Y)
-    x_train = X[:3*len(X)//4]
-    y_train = Y[:3*len(Y)//4]
-    x_test = X[3*len(X)//4:]
-    y_test = Y[3*len(Y)//4:]
-
-    print("\n")
-    print("x_train.shape", x_train.shape)
-    print("x_test.shape", x_test.shape)
-    print("x_train[0].shape", x_train[0].shape)
-    print("y_train.shape", y_train.shape)
-    print("y_test.shape", y_test.shape)
-    print("y_test[0].shape", y_test[0].shape)
-    print("\n")
-
-    results = model.fit(
-        x_train, y_train,
-        epochs = 100,
-        batch_size = 64,
-        validation_data = (x_test, y_test)
-    )
-
-    epoch_time = int(time.time())
-    model_directory = assets.DATA_PATH + "/ml/{0}".format(epoch_time)
-    os.mkdir(model_directory)
-    model.save_weights(model_directory + "/weights")
-    with open(model_directory + "/model_json", "w") as json:
-        json.write(model.to_json())
-    print(np.mean(results.history["val_acc"]))
     return model
 
 
-if __name__ == "__main__":
-    data_batch = get_data_batch("33020190233.train")
+def train(model, image_filenames, training_validation_ratio=0.75):
+    unlabeled_data = []
+    labeled_data = []
+    for image_filename in image_filenames:
+        image, mask = import_image(image_filename)
+        if mask is not None:
+            unlabeled_data.append(image)
+            labeled_data.append(mask)
+    unlabeled_data = np.array(unlabeled_data)
+    labeled_data = np.array(labeled_data)
 
-    print(data_batch)
-    model = build_model((settings.DESIRED_IMAGE_HEIGHT, settings.DESIRED_IMAGE_WIDTH), len(settings.LABELS))
-    print("\n\n")
-    train(model, data_batch)
+    training_input_data, validation_input_data = partition_data(
+        unlabeled_data, training_validation_ratio)
+    training_target_data, validation_target_data = partition_data(
+        labeled_data, training_validation_ratio)
+
+    results = model.fit(training_input_data,
+                        training_target_data,
+                        epochs=100,
+                        batch_size=64,
+                        validation_data=(validation_input_data,
+                                         validation_target_data))
+    return model
+
+
+def partition_data(data, ratio):
+    partition_index = int(ratio * len(data))
+    return data[:partition_index], data[partition_index:]
+
+
+def save_model_to_directory(model, directory_path=None):
+    """Saves the specified model to a directory.
+
+    If the directory is not specified, the model will be saved to the directory
+    defined in the settings module. Moreover, if the directory does not exist,
+    it will be created.
+
+    Arguments:
+        model: The model to save.
+        directory_path: A path to the directory where the model will be saved.
+    """
+    if directory_path is None:
+        directory_path = assets.MODELS_PATH
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path)
+
+    model.save_weights(directory_path + "/weights")
+    with open(directory_path + "/model_json", "w") as file:
+        file.write(model.to_json())
+
+
+if __name__ == "__main__":
+    main()

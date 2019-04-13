@@ -21,15 +21,16 @@ def import_image(image_filename, image_extension=".jpeg", ground_truth_extension
     """
     assert ground_truth_extension in {".json", ".xml"}
 
-    image = Image.open(os.path.join(assets.IMAGE_PATH, image_filename))
+    image_filepath = os.path.join(assets.IMAGE_PATH, image_filename)
+    image = Image.open(image_filepath)
     width, height = image.size
 
     def scaling_function(point):
-        x_scale = settings.DESIRED_IMAGE_WIDTH / width
-        y_scale = settings.DESIRED_IMAGE_HEIGHT / height
+        x_scale = settings.IMAGE_WIDTH / width
+        y_scale = settings.IMAGE_HEIGHT / height
         return (int(point[0] * x_scale), int(point[1] * y_scale))
 
-    resized_image = image.resize((settings.DESIRED_IMAGE_WIDTH, settings.DESIRED_IMAGE_HEIGHT))
+    resized_image = image.resize((settings.IMAGE_WIDTH, settings.IMAGE_HEIGHT))
 
     ground_truth_filename = image_filename[:-len(image_extension)]
     ground_truth_local_path = ground_truth_filename + ground_truth_extension
@@ -76,8 +77,8 @@ def xml_to_json(xml_source_file, lambda_func=None):
         metadata['height'] = int(meta.attributes['imageHeight'].value)
         metadata['width'] = int(meta.attributes['imageWidth'].value)
         if lambda_func:
-            metadata['width'], metadata['height'] = (settings.DESIRED_IMAGE_WIDTH,
-                settings.DESIRED_IMAGE_HEIGHT)
+            metadata['width'], metadata['height'] = (settings.IMAGE_WIDTH,
+                settings.IMAGE_HEIGHT)
         json = {}
         for t in region_types:
             regions = xmldoc.getElementsByTagName(t)

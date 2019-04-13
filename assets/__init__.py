@@ -17,6 +17,7 @@ import os
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 DATA_PATH = PATH + "/data"
+MODELS_PATH = PATH + "/data/ml"
 TRAINING_PATH = DATA_PATH + "/training"
 
 SEGMENTS_PATH = PATH + "/segments"
