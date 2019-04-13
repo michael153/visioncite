@@ -13,23 +13,6 @@ import assets
 import settings
 from preprocessing import import_image
 
-def img_to_np(img):
-    arr = np.asarray(padded)
-    print(arr.shape)
-    return arr
-
-def pad_img(img, width=settings.DESIRED_IMAGE_WIDTH, height=settings.DESIRED_IMAGE_HEIGHT):
-    size = img.size
-    dW = width - size[0]
-    dH = height - size[1]
-    padding = (dW//2, dH//2, dW - dW//2, dH - dH//2)
-    padded = ImageOps.expand(img, padding, fill="white")
-    return padded
-
-# def scale_img(img, width=settings.DESIRED_IMAGE_WIDTH, height=settings.DESIRED_IMAGE_HEIGHT):
-#     scaled = img.resize((width, height))
-#     return scaled
-
 
 def get_data_batch(filename):
     with open(os.path.join(assets.TRAINING_PATH, filename), 'r') as f:
@@ -44,42 +27,6 @@ def get_data_batch(filename):
 def build_model(dim, num_class=4):
     print("Image shape: {0}".format(dim))
     flattened_dim = np.prod(np.array(dim))
-
-    """
-    @param  d           integer equal to m x n, where m and n are the
-                        dimensions of the images being passed into the
-                        model
-    @param  num_class   number of possible labels for each pixel
-    @return model       given an image, this model returns a d*num_class
-                        array of probabilities. (num_class*i, num_class*(i+1))
-                        represents the softmax probabilities of the ith
-                        pixel in respect to the classes
-    """
-    def make_simple_model(d, num_class):
-        model = Sequential(d)
-        model.add(Dense(d/2, activation = "relu", input_shape=(d,)))
-        model.add(Dropout(0.1))
-        model.add(Dense(d/4, activation = "relu"))
-        model.add(Dropout(0.1))
-        model.add(Dense(d/8, activation = "relu"))
-        model.add(Dropout(0.1))
-        model.add(Dense(d/8, activation = "relu"))
-        model.add(Dropout(0.1))
-        model.add(Dense(d/4, activation = "relu"))
-        model.add(Dropout(0.1))
-        model.add(Dense(d/2, activation = "relu"))
-        model.add(Dropout(0.1))
-        model.add(Dense(d, activation = "relu"))
-        model.add(Dense(d*num_class, activation = "softmax"))
-        start = time.time()
-        model.compile(
-            optimizer = "adam",
-            loss = "binary_crossentropy",
-            metrics = ["accuracy"]
-        )
-        print("Model Compilation Time: ", time.time() - start)
-        model.summary()
-        return model
 
     """
     SegNet-Like Conv Net Model that takes 3D image input (RGB)
@@ -114,10 +61,6 @@ def build_model(dim, num_class=4):
         model.add(Conv2D(128, kernel_size=3, activation='relu'))
 
         model.add(Conv2D(num_class, kernel_size=3, activation='softmax'))
-
-        # model.add(Flatten())
-        # flattened_dim = height*width*num_class
-        # model.add(Dense(flattened_dim, activation='softmax'))
 
         start = time.time()
         model.compile(
