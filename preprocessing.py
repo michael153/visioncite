@@ -73,8 +73,8 @@ def xml_to_json(xml_source_file, lambda_func=None):
         metadata = {}
         meta = xmldoc.getElementsByTagName('Page')[0]
         metadata['filename'] = meta.attributes['imageFilename'].value
-        metadata['height'] = int(meta.attributes['imageHeight'].value)
-        metadata['width'] = int(meta.attributes['imageWidth'].value)
+        metadata['height'] = settings.DESIRED_IMAGE_HEIGHT
+        metadata['width'] = settings.DESIRED_IMAGE_WIDTH
         if lambda_func:
             metadata['width'], metadata['height'] = (settings.DESIRED_IMAGE_WIDTH,
                 settings.DESIRED_IMAGE_HEIGHT)
