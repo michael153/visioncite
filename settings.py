@@ -1,23 +1,20 @@
-DESIRED_IMAGE_HEIGHT = 900
-DESIRED_IMAGE_WIDTH  = 600
+DESIRED_IMAGE_HEIGHT = 384
+DESIRED_IMAGE_WIDTH  = 256
 
 LABELS = [
-    'NONE',
-    # 'caption',
-    # 'other',
-    # 'page-number',
-    # 'credit',
-    'paragraph'#,
-    # 'footer',
-    # 'logo',
-    # 'heading',
-    # 'drop-capital',
-    # 'floating',
-    # 'generic_TextRegion',
-    # 'generic_ImageRegion',
-    # 'generic_GraphicRegion',
-    # 'header',
-    # 'punch-hole'
+    # 'NONE',
+    'other',
+    'caption',
+    'page-number',
+    'credit',
+    'paragraph',
+    'footer',
+    'logo',
+    'heading',
+    'drop-capital',
+    'floating',
+    'header',
+    'punch-hole'
 ]
 
 # This can always be left intact

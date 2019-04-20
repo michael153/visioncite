@@ -36,6 +36,20 @@ def get_data_batch(filename):
         lines = [line.strip('\n') for line in f]
     return lines
 
+def get_loss(mask_value):
+    mask_value = K.variable(mask_value)
+    def masked_categorical_crossentropy(y_true, y_pred):
+        # find out which timesteps in `y_true` are not the padding character '#'
+        mask = K.all(K.equal(y_true, mask_value), axis=-1)
+        mask = 1 - K.cast(mask, K.floatx())
+
+        # multiply categorical_crossentropy with the mask
+        loss = K.categorical_crossentropy(y_true, y_pred) * mask
+
+        # take average w.r.t. the number of unmasked entries
+        return K.sum(loss) / K.sum(mask)
+    return masked_categorical_crossentropy
+
 """
 @param  dim         the dimensions of the images being trained on
         num_class   the number of possible labels for each pixel
@@ -120,9 +134,14 @@ def build_model(dim, num_class=4):
         # model.add(Dense(flattened_dim, activation='softmax'))
 
         start = time.time()
+
+        masked_label = np.array([0]*len(settings.LABELS))
+        masked_label[0] = 1
+        masked_categorical_crossentropy = get_loss(masked_label)
         model.compile(
             optimizer='adam',
-            loss='categorical_crossentropy',
+            # loss='categorical_crossentropy',
+            loss=masked_categorical_crossentropy,
             metrics=['accuracy']
         )
         print("Model Compilation Time: ", time.time() - start)
@@ -161,7 +180,7 @@ def train(model, data_batch):
 
     results = model.fit(
         x_train, y_train,
-        epochs = 100,
+        epochs = 64,
         batch_size = 64,
         validation_data = (x_test, y_test)
     )
