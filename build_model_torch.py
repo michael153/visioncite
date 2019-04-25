@@ -16,6 +16,7 @@ from torch.autograd import Variable
 import assets
 import settings
 from preprocessing import import_image
+from mailer import send_email
 
 """
 @param  filename    filename consisting of images to be trained on
@@ -45,6 +46,7 @@ def dataloader(filename, batch_size=16):
     y_train = torch.tensor(y_train).type(torch.LongTensor)
     print("(Torch) x_train shape:", list(x_train.size()))
     print("(Torch) y_train shape:", list(y_train.size()))
+    print("\n")
     processed = 0
     for batch_id in range(num_batches):
         print("Building batch %d / %d" % (batch_id, num_batches))
@@ -159,5 +161,7 @@ def train(data_file):
 if __name__ == "__main__":
     filename = "train.train"
     print("Start training process on file %s @ time" % filename, datetime.datetime.now())
+    send_email("[CHTC Job Update]", "Training job started on file %s @ time %s" % (filename, datetime.datetime.now()))
     train("train.train")
     print("End training @ time", datetime.datetime.now())
+    send_email("[CHTC Job Update]", "Ending job on file %s @ time %s" % (filename, datetime.datetime.now()))
