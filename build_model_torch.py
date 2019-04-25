@@ -66,37 +66,37 @@ class CNN(nn.Module):
         super(CNN, self).__init__()
         self.layer1 = nn.Sequential(
             #384x256x3 ==> 384x256x128
-            nn.Conv2d(3, 128, kernel_size=2),
+            nn.Conv2d(3, 128, kernel_size=3, padding=1),
             nn.BatchNorm2d(128),
             nn.ReLU(),
             #384x256x128 ==> 192x128x128
             nn.MaxPool2d(2))
         self.layer2 = nn.Sequential(
             #192x128x128 ==> 192x128x64
-            nn.Conv2d(128, 64, kernel_size=2),
+            nn.Conv2d(128, 64, kernel_size=3, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
             #192x128x64 ==> 96x64x64
             nn.MaxPool2d(2))
         self.layer3 = nn.Sequential(
             #96x64x64 ==> 96x64x32
-            nn.Conv2d(64, 32, kernel_size=2),
+            nn.Conv2d(64, 32, kernel_size=3, padding=1),
             nn.BatchNorm2d(32),
             nn.ReLU(),
             #96x64x32 ==> 48x32x32
             nn.MaxPool2d(2))
         self.layer4 = nn.Sequential(
             #48x32x32 ==> 48x32x64
-            nn.Conv2d(32, 64, kernel_size=2),
+            nn.Conv2d(32, 64, kernel_size=3, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU())
         self.layer5 = nn.Sequential(
             #96x64x64 ==> 96x64x218
-            nn.Conv2d(64, 128, kernel_size=2),
+            nn.Conv2d(64, 128, kernel_size=3, padding=1),
             nn.BatchNorm2d(128),
             nn.ReLU())
         self.layer6 = nn.Sequential(
-            nn.Conv2d(128, 10, kernel_size=2),
+            nn.Conv2d(128, len(settings.LABELS), kernel_size=3, padding=1),
             nn.Softmax())
 
     def forward(self, x):
@@ -130,7 +130,7 @@ def train(data_file):
     print("\n")
 
     cnn = CNN()
-    loss_func = nn.CrossEntropyLoss();
+    loss_func = F.cross_entropy
     optimizer = torch.optim.Adam(cnn.parameters(), lr=1e-3)
 
     losses = []
@@ -141,13 +141,13 @@ def train(data_file):
 
             optimizer.zero_grad()
             outputs = cnn(images)
-            loss = loss_func(outputs, labels)
+            loss = loss_func(outputs, labels, ignore_index=0)
             loss.backward()
             optimizer.step()
 
-            losses.append(loss.data[0])
-            if (i+1) % 100 == 0:
-                print ('Epoch : %d/%d, Iter : %d/%d,  Loss: %.4f' % (epoch+1, num_epochs, i+1, len(train_dataset)//batch_size, loss.data[0]))
+            losses.append(loss.item())
+            # if (i+1) % 100 == 0:
+            print ('Epoch : %d/%d, Iter : %d/%d,  Loss: %.4f' % (epoch+1, num_epochs, i+1, len(images), loss.item()))
 
     epoch_time = int(time.time())
     model_directory = assets.DATA_PATH + "/ml/{0}".format(epoch_time)

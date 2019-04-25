@@ -106,7 +106,7 @@ def xml_to_json(xml_source_file, lambda_func=None):
         return {}
 
 
-def json_to_mask(json_data):
+def json_to_mask(json_data, is_pytorch=True):
     """Generates the label mask for an image given its ground truth JSON data.
 
     Arguments:
@@ -137,8 +137,10 @@ def json_to_mask(json_data):
     mask = np.copy(np.asarray(overlay)).astype(int)
     mask.setflags(write=1)
     mask[mask == 255] = 0
-    one_hots = np.zeros((mask.shape[0], mask.shape[1], len(settings.LABELS)))
-    for i in range(one_hots.shape[0]):
-        for j in range(one_hots.shape[1]):
-            one_hots[i][j][mask[i][j]] = 1
-    return one_hots
+    if not is_pytorch:
+        one_hots = np.zeros((mask.shape[0], mask.shape[1], len(settings.LABELS)))
+        for i in range(one_hots.shape[0]):
+            for j in range(one_hots.shape[1]):
+                one_hots[i][j][mask[i][j]] = 1
+        return one_hots
+    return mask

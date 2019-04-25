@@ -60,8 +60,8 @@ def resize_ground_truth(path, output_directory_path):
         return
 
     def scaling_function(point):
-        x_scale = settings.DESIRED_IMAGE_WIDTH / data['metadata']['height']
-        y_scale = settings.DESIRED_IMAGE_HEIGHT / data['metadata']['width']
+        x_scale = settings.DESIRED_IMAGE_WIDTH / data['metadata']['width']
+        y_scale = settings.DESIRED_IMAGE_HEIGHT / data['metadata']['height']
         return (int(point[0] * x_scale), int(point[1] * y_scale))
 
     scaled_data = preprocessing.xml_to_json(path, scaling_function)
