@@ -162,6 +162,6 @@ if __name__ == "__main__":
     filename = "train.train"
     print("Start training process on file %s @ time" % filename, datetime.datetime.now())
     send_email("[CHTC Job Update]", "Training job started on file %s @ time %s" % (filename, datetime.datetime.now()))
-    train("train.train")
+    train("32020191045.train")
     print("End training @ time", datetime.datetime.now())
     send_email("[CHTC Job Update]", "Ending job on file %s @ time %s" % (filename, datetime.datetime.now()))

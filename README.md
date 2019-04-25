@@ -4,4 +4,5 @@
 - PIL
 - sendgrid
 - matplotlib
+- dotenv
 - (outdated) keras
