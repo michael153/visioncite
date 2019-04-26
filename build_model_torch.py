@@ -162,6 +162,9 @@ if __name__ == "__main__":
     filename = "train.train"
     print("Start training process on file %s @ time" % filename, datetime.datetime.now())
     send_email("[CHTC Job Update]", "Training job started on file %s @ time %s" % (filename, datetime.datetime.now()))
-    train("32020191045.train")
+    try:
+        train("32020191045.train")
+        send_email("[CHTC Job Update]", "Ending job successfully on file %s @ time %s" % (filename, datetime.datetime.now()))
+    except Exception as e:
+        send_email("[CHTC Job Update]", "Ended job with error %s on file %s @ time %s" % (str(e), filename, datetime.datetime.now()))
     print("End training @ time", datetime.datetime.now())
-    send_email("[CHTC Job Update]", "Ending job on file %s @ time %s" % (filename, datetime.datetime.now()))
