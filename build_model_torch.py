@@ -131,9 +131,9 @@ def train(data_file):
     print("="*50)
     print("\n")
 
-    cnn = CNN()
+    cnn_model = CNN()
     loss_func = F.cross_entropy
-    optimizer = torch.optim.Adam(cnn.parameters(), lr=1e-3)
+    optimizer = torch.optim.Adam(cnn_model.parameters(), lr=1e-3)
 
     losses = []
     for epoch in range(num_epochs):
@@ -142,7 +142,7 @@ def train(data_file):
             labels = Variable(labels)
 
             optimizer.zero_grad()
-            outputs = cnn(images)
+            outputs = cnn_model(images)
             loss = loss_func(outputs, labels, ignore_index=0)
             loss.backward()
             optimizer.step()
@@ -154,8 +154,7 @@ def train(data_file):
     epoch_time = int(time.time())
     model_directory = assets.DATA_PATH + "/ml/{0}".format(epoch_time)
     os.mkdir(model_directory)
-    torch.save(the_model.state_dict(), model_directory)
-    return model
+    torch.save(cnn_model.state_dict(), model_directory)
 
 
 if __name__ == "__main__":
