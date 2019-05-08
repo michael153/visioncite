@@ -1,15 +1,10 @@
 import os
-import sys
 import time
-import math
-import json
 import datetime
 import traceback
 import argparse
 
 import numpy as np
-from PIL import Image, ImageOps
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -19,8 +14,6 @@ import assets
 import settings
 from preprocessing import import_image
 from mailer import send_email
-
-import torch
 
 
 def main():
