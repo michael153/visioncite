@@ -4,6 +4,7 @@ import time
 import math
 import json
 import datetime
+import traceback
 
 import numpy as np
 from PIL import Image, ImageOps
@@ -118,15 +119,15 @@ class CNN(nn.Module):
 @param  data_file  list of filenames to be training
 """
 def train(data_file):
-    batch_size = 16
-    num_epochs = 64
+    batch_size = 64
+    num_epochs = 32
     data = dataloader(data_file, batch_size)
 
     print("\n")
     print("Training / Testing Data Info:")
     print("Num batches (batch_size=%d):" % batch_size, len(data["train"]))
-    print("Input image shape:", data["train"][0][0].shape)
-    print("Output mask shape:", data["train"][0][1].shape)
+    # print("Input image shape:", data["train"][0][0].shape)
+    # print("Output mask shape:", data["train"][0][1].shape)
     print("Num testing datapoints:", len(data["test"]))
     print("="*50)
     print("\n")
@@ -154,16 +155,19 @@ def train(data_file):
     epoch_time = int(time.time())
     model_directory = assets.DATA_PATH + "/ml/{0}".format(epoch_time)
     os.mkdir(model_directory)
-    torch.save(cnn_model.state_dict(), model_directory)
+    torch.save(cnn_model.state_dict(), model_directory + "/saved_model")
 
 
 if __name__ == "__main__":
-    filename = "train.train"
+    filename = sys.argv[1]
     print("Start training process on file %s @ time" % filename, datetime.datetime.now())
     send_email("[CHTC Job Update]", "Training job started on file %s @ time %s" % (filename, datetime.datetime.now()))
     try:
-        train("32020191045.train")
+        train(filename)
         send_email("[CHTC Job Update]", "Ending job successfully on file %s @ time %s" % (filename, datetime.datetime.now()))
     except Exception as e:
-        send_email("[CHTC Job Update]", "Ended job with error %s on file %s @ time %s" % (str(e), filename, datetime.datetime.now()))
+        stack_trace = traceback.format_exc()
+        send_email(
+            "[CHTC Job Update]", 
+            "Ended job with error %s on file %s @ time %s.\n\n%s" % (str(e), filename, datetime.datetime.now(), stack_trace))
     print("End training @ time", datetime.datetime.now())
