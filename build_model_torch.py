@@ -5,6 +5,7 @@ import math
 import json
 import datetime
 import traceback
+import argparse
 
 import numpy as np
 from PIL import Image, ImageOps
@@ -18,6 +19,35 @@ import assets
 import settings
 from preprocessing import import_image
 from mailer import send_email
+
+import torch
+
+def main():
+    parser = argparse.ArgumentParser(description='Train model')
+    parser.add_argument('--disable-cuda', action='store_true',
+                        help='Disable CUDA')
+    parser.add_argument('filename', help='Train file')
+    args = parser.parse_args()
+
+    args.device = None
+    if not args.disable_cuda and torch.cuda.is_available():
+        args.device = torch.device('cuda')
+    else:
+        args.device = torch.device('cpu')
+
+    print("Start training process on %s @ time" % args.filename, datetime.datetime.now())
+
+    send_email("[CHTC Job Update]", "Training job started on file %s @ time %s" % (args.filename, datetime.datetime.now()))
+    try:
+        train(args.filename)
+        send_email("[CHTC Job Update]", "Ending job successfully on file %s @ time %s" % (args.filename, datetime.datetime.now()))
+    except Exception as e:
+        stack_trace = traceback.format_exc()
+        send_email(
+            "[CHTC Job Update]",
+            "Ended job with error %s on file %s @ time %s.\n\n%s" % (str(e), args.filename, datetime.datetime.now(), stack_trace))
+    print("End training @ time", datetime.datetime.now())
+
 
 """
 @param  filename    filename consisting of images to be trained on
@@ -159,15 +189,4 @@ def train(data_file):
 
 
 if __name__ == "__main__":
-    filename = sys.argv[1]
-    print("Start training process on file %s @ time" % filename, datetime.datetime.now())
-    send_email("[CHTC Job Update]", "Training job started on file %s @ time %s" % (filename, datetime.datetime.now()))
-    try:
-        train(filename)
-        send_email("[CHTC Job Update]", "Ending job successfully on file %s @ time %s" % (filename, datetime.datetime.now()))
-    except Exception as e:
-        stack_trace = traceback.format_exc()
-        send_email(
-            "[CHTC Job Update]", 
-            "Ended job with error %s on file %s @ time %s.\n\n%s" % (str(e), filename, datetime.datetime.now(), stack_trace))
-    print("End training @ time", datetime.datetime.now())
+    main()
