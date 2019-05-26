@@ -165,5 +165,5 @@ if __name__ == "__main__":
         train("32020191045.train")
         send_email("[CHTC Job Update]", "Ending job successfully on file %s @ time %s" % (filename, datetime.datetime.now()))
     except Exception as e:
-        send_email("[CHTC Job Update]", "Ended job with error %s on file %s @ time %s" % (str(e), filename, datetime.datetime.now()))
+        send_email("[CHTC Job Update]", "Ended job with the following error: %s on file %s @ time %s" % (str(e), filename, datetime.datetime.now()))
     print("End training @ time", datetime.datetime.now())

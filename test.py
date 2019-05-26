@@ -1,79 +1,67 @@
-import assets
-import json
+import os
 import random
-from PIL import Image, ImageDraw
-from matplotlib.pyplot import cm
+from PIL import Image
 import numpy as np
 
-# from build_model import scale_img
-from preprocessing import import_image, xml_to_json, json_to_mask
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.autograd import Variable
 
-def get_colors(n):
-    color = [''.join([random.choice('0123456789ABCDEF') for j in range(6)])
-             for i in range(n)]
-    return [tuple(int(col[i:i+2], 16) for i in (0, 2 ,4)) for col in color]
+import assets
+import settings
+from build_model_torch import CNN
 
-def draw_overlay(img, data):
-	print(json.dumps(data, indent=4))
-	num_types = sum([len(data['xml'][region_type].keys()) for region_type in data['xml']], 0)
-	colors = get_colors(num_types)
-	color_index = 0
-	width = data['metadata']['width']
-	height = data['metadata']['height']
-	img = img.convert('RGBA')
-	overlay = Image.new('RGBA', (width, height), (255, 255, 255, 0))
-	for region_type in data['xml']:
-	    for region in data['xml'][region_type]:
-	        for shape in data['xml'][region_type][region]:
-	            poly = [tuple(p) for p in shape]
-	            draw = ImageDraw.Draw(overlay)
-	            draw.polygon(poly, fill=tuple(list(colors[color_index]) + [200]), outline=colors[color_index])
-	        color_index += 1
-	img = Image.alpha_composite(img, overlay)
-	img = img.convert("RGB")
+def load_model(path):
+	print("Loading model...")
+	model = CNN()
+	model.load_state_dict(torch.load(path))
+	print(model)
+	print()
+	model.eval()
+	return model
+
+def load_data(fname):
+	print("Loading data...")
+	img = Image.open(os.path.join(assets.IMAGE_PATH, str(fname) + '.jpeg'))
+	assert tuple(img.size) == settings.DESIRED_RESOLUTION
+	arr = np.asarray(img)
+	arr = np.moveaxis(arr, -1, 0)
+	arr = np.array([arr])
+	print()
+	return torch.Tensor(arr)
+
+def draw_mask(data):
+	def get_colors(n):
+	    color = [''.join([random.choice('0123456789ABCDEF') for j in range(6)])
+	             for i in range(n)]
+	    return [tuple(int(col[i:i+2], 16) for i in (0, 2 ,4)) for col in color]
+	data = data.detach().numpy()
+	data = data[0]
+	stats = []
+	for i in range(len(settings.LABELS)):
+		stats.append((np.average(data[i,:,:]), np.std(data[i,:,:])))
+	print(data.shape)
+	colors = get_colors(len(settings.LABELS))
+	imgarr = np.zeros((settings.DESIRED_RESOLUTION[1], settings.DESIRED_RESOLUTION[0], 3), dtype=np.uint8)
+	for r in range(settings.DESIRED_RESOLUTION[1]):
+		for c in range(settings.DESIRED_RESOLUTION[0]):
+			label = np.argmax(data[:,r,c])
+			# label = 0
+			# for k in range(len(settings.LABELS)-1, -1, -1):
+			# 	if data[k,r,c] > stats[k][0] + 1*stats[k][1]:
+			# 		label = k
+			# 		break
+			imgarr[r, c] = colors[label]
+	img = Image.fromarray(imgarr)
 	img.show()
-	print(num_types)
 
 
-CONST_IMG_HEIGHT = 1350
-CONST_IMG_WIDTH  = 900
+version = 1556507101
+model = load_model(os.path.join(assets.MODEL_PATH, str(version) + '/', 'saved_model'))
+arr = load_data("00001288")
 
-# scale =  lambda cur: lambda new: lambda p: (int(p[0]*new[0]/cur[0]), int(p[1]*new[1]/cur[1]))
-
-file_name = '00000086'
-xml_file_name = file_name + '.xml'
-img_file_name = file_name + '.tif'
-
-
-img, mask = import_image(img_file_name)
-
-print(img.shape)
-# print(img)
-# print("\n\n")
-print(mask.shape)
-
-# data = xml_to_json(assets.XML_PATH + "/" + xml_file_name)
-# img = Image.open(assets.IMAGE_PATH + "/" + img_file_name)
-
-# scaled_img = scale_img(img, width=CONST_IMG_WIDTH, height=CONST_IMG_HEIGHT)
-# scaled_data = xml_to_json(assets.XML_PATH + "/" + xml_file_name, scale(
-# 	(data['metadata']['width'], data['metadata']['height']))
-# 	((CONST_IMG_WIDTH, CONST_IMG_HEIGHT))
-# )
-
-# draw_overlay(img, data)
-# draw_overlay(scaled_img, scaled_data)
-
-# mask = json_to_mask(scaled_data)
-# print("\n")
-# print(mask)
-
-# overlay = Image.new('RGB', (scaled_data['metadata']['width'], scaled_data['metadata']['height']), (255, 255, 255))
-# colors = get_colors(len(set(mask.flatten().tolist())))
-# print(overlay.size)
-# print(mask.shape)
-# for r in range(0, mask.shape[0]):
-#     for c in range(0, mask.shape[1]):
-#         if mask[r][c] >= 0:
-#             overlay.putpixel((c,r), colors[(mask[r][c]+1)%len(colors)])
-# overlay.show()
+output = model(arr)
+print(output.shape)
+print(output)
+draw_mask(output)
