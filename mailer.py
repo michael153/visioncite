@@ -7,9 +7,10 @@ from sendgrid.helpers.mail import Mail
 from dotenv import load_dotenv
 
 def send_email(subject, content):
-	cur_dir = os.path.dirname(os.path.realpath(__file__))
-	load_dotenv(dotenv_path=os.path.join(cur_dir, '.env'))
-	apikey=os.environ['sendgrid_api']
+	# cur_dir = os.path.dirname(os.path.realpath(__file__))
+	# load_dotenv(dotenv_path=os.path.join(cur_dir, '.env'))
+	# apikey=os.environ['sendgrid_api']
+	apikey = "SG.ACAoABOJQZSJazaoxA11fw.gpelGQzsoBTgAukWu-WTjdQGjQdeLBbKtM1qAHo8Blk"
 	sender = "chtc-trainjob-noreply@eyecite.com"
 	recipients = ["m.wan@berkeley.edu", "bveeramani@berkeley.edu"]
 	for recipient in recipients:
