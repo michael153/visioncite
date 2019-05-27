@@ -48,7 +48,7 @@ def main():
     args = parser.parse_args()
 
     if not is_valid(args.dataset_path):
-        print("Error: dataset must exist and contain a subdirectory Images" +
+        print("Error: dataset must exist and contain a subdirectory Images " +
               "and a subdirectory named XML")
         return 1
 
