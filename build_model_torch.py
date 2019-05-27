@@ -15,6 +15,11 @@ import settings
 from preprocessing import import_image
 from mailer import send_email
 
+BATCH_SIZE = 64
+NUM_EPOCHS = 32
+
+
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def main():
     parser = argparse.ArgumentParser(description='Train model')
@@ -23,12 +28,6 @@ def main():
                         help='Disable CUDA')
     parser.add_argument('filename', help='Train file')
     args = parser.parse_args()
-
-    args.device = None
-    if not args.disable_cuda and torch.cuda.is_available():
-        args.device = torch.device('cuda')
-    else:
-        args.device = torch.device('cpu')
 
     print("Start training process on %s @ time" % args.filename,
           datetime.datetime.now())
@@ -51,7 +50,7 @@ def main():
     print("End training @ time", datetime.datetime.now())
 
 
-def dataloader(filename, batch_size=16):
+def dataloader(filename, BATCH_SIZE=16):
     """
     @param  filename    filename consisting of images to be trained on
     @return data        a dict of training and testing data, where the
@@ -71,7 +70,14 @@ def dataloader(filename, batch_size=16):
     y_train = np.array(y[:int(0.75 * len(lines))])
     x_test = np.array(x[int(0.75 * len(lines)):])
     y_test = np.array(y[int(0.75 * len(lines)):])
-    num_batches = len(x_train) // batch_size
+
+    # Move tensors to GPU
+    x_train = x_train.to(device)
+    y_train = y_train.to(device)
+    x_test = x_test.to(device)
+    y_test = y_test.to(device)
+
+    num_batches = len(x_train) // BATCH_SIZE
     x_train = torch.tensor(x_train).type(torch.FloatTensor)
     y_train = torch.tensor(y_train).type(torch.LongTensor)
     print("(Torch) x_train shape:", list(x_train.size()))
@@ -80,7 +86,7 @@ def dataloader(filename, batch_size=16):
     processed = 0
     for batch_id in range(num_batches):
         print("Building batch %d / %d" % (batch_id, num_batches))
-        num_points = batch_size
+        num_points = BATCH_SIZE
         data["train"].append((x_train[processed:processed + num_points],
                               y_train[processed:processed + num_points]))
         processed += num_points
@@ -149,13 +155,11 @@ def train(data_file):
     @param  model       the model being trained
     @param  data_file  list of filenames to be training
     """
-    batch_size = 64
-    num_epochs = 32
-    data = dataloader(data_file, batch_size)
+    data = dataloader(data_file, BATCH_SIZE)
 
     print("\n")
     print("Training / Testing Data Info:")
-    print("Num batches (batch_size=%d):" % batch_size, len(data["train"]))
+    print("Num batches (BATCH_SIZE=%d):" % BATCH_SIZE, len(data["train"]))
     # print("Input image shape:", data["train"][0][0].shape)
     # print("Output mask shape:", data["train"][0][1].shape)
     print("Num testing datapoints:", len(data["test"]))
@@ -163,11 +167,12 @@ def train(data_file):
     print("\n")
 
     cnn_model = CNN()
+    cnn_model = cnn_model.to(device)
     loss_func = F.cross_entropy
     optimizer = torch.optim.Adam(cnn_model.parameters(), lr=1e-3)
 
     losses = []
-    for epoch in range(num_epochs):
+    for epoch in range(NUM_EPOCHS):
         for i, (images, labels) in enumerate(data["train"]):
             images = Variable(images.float())
             labels = Variable(labels)
@@ -181,7 +186,7 @@ def train(data_file):
             losses.append(loss.item())
             # if (i+1) % 100 == 0:
             print('Epoch : %d/%d, Iter : %d/%d,  Loss: %.4f' %
-                  (epoch + 1, num_epochs, i + 1, len(images), loss.item()))
+                  (epoch + 1, NUM_EPOCHS, i + 1, len(images), loss.item()))
 
     epoch_time = int(time.time())
     model_directory = assets.DATA_PATH + "/ml/{0}".format(epoch_time)
