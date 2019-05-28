@@ -1,122 +1,202 @@
+"""
+Formats citations into various styles (MlA, APA).
+@author Michael Wan
+"""
+
 import datetime
+from urllib import parse
+
+
+def get_name_splice(author):
+    """ Splits a name into its first, middle, and last name components.
+
+    Arguments:
+        author: The name of interest
+    """
+    author = author.strip()
+    if " " not in author:
+        return ('', '', author)
+    first = author.find(" ")
+    last = author.rfind(" ")
+    if author.count(" ") < 2:
+        return (author[:first], '', author[last + 1:])
+    return (author[:first], author[first + 1:last], author[last + 1:])
+
+
+def get_website_root(url):
+    """ Given a url, extract the hostname.
+
+    For instance, the hostname of the url "https://google.com/search"
+    is google.com
+
+    Arguments:
+        url: The url of interest
+    """
+    url = url.replace("www.", "")
+    if "https://" not in url and "http://" not in url:
+        url = "http://" + url
+    return parse.urlparse(url).netloc
+
 
 class Citation:
-	def __init__(self):
-		self.title = ""
-		self.authors = []
-		self.date_month = ""
-		self.date_day = ""
-		self.date_year = ""
-		self.publisher = ""
-		self.url = ""
+    """ Stores citation information and provides methods for
+    APA and MLA formatting
+    """
 
-	def __init__(self, title="", authors=[], date=("","",""), publisher="", url=""):
-		self.title = title
-		self.authors = authors
-		self.date_month = date[0]
-		self.date_day = date[1]
-		self.date_year = date[2]
-		self.publisher = publisher
-		self.url = url
+    def __init__(self,
+                 title="",
+                 authors=None,
+                 date=("", "", ""),
+                 publisher="",
+                 url="",
+                 author_is_organization=False,
+                 is_website=False):
+        self.title = title
+        self.authors = authors
+        self.date_month = date[0]
+        self.date_day = date[1]
+        self.date_year = date[2]
+        self.publisher = publisher
+        self.url = url
+        self.author_is_organization = author_is_organization
+        self.is_website = is_website or url
+        if self.author_is_organization:
+            assert len(authors) == 1, "More than one organization as author."
+        if self.is_website:
+            # assert self.url is not None, "Generic website has no URL."
+            if not self.url:
+                print("*** Warning. Website has no URL.")
 
-	def get_name_splice(self, author):
-		if " " not in author:
-			return ('', '', author)
-		else:
-			first = author.find(" ")
-			last = author.rfind(" ")
-			if author.count(" ") < 2:
-				return (author[:first],
-					'', author[last + 1:])
-			else:
-				return (author[:first],
-					author[first + 1: last],
-					author[last + 1:])
+    def format_mla(self):
+        """ Formats this citation class into MLA format
 
-	# def get_middle_initial(self, author):
-	# 	if author.count(" ") < 2:
-	# 		return None
-	# 	else:
-	# 		first = author.find(" ")
-	# 		last = author.rfind(" ")
-	# 		return author[first + 1: last][0]
+        For non-website works, the general format is:
+            Last name, First name. <i>Title.<i> City: Publisher, Year.
+        For websites, the format is:
+            Contributors. "Title." Website. Edition.
+            Website Publisher, Date. Web. Date Accessed.
 
-	# def get_last_name(self, author):
-	# 	if " " not in author:
-	# 		return author
-	# 	else:
-	# 		return author[author.rfind(" ") + 1:]
+        Source: http://www.easybib.com/reference/guide/mla/general
+        """
+        enquote = lambda t: "\"" + t + "\""
+        italicize = lambda t: "<i>" + t + "</i>"
+        components = []
+        if self.authors:
+            if self.author_is_organization:
+                components.append(self.authors[0] + ".")
+            else:
+                author_components = []
+                self.authors.sort(key=lambda a: get_name_splice(a)[2])
+                first = get_name_splice(self.authors[0])
+                author_components.append(", ".join(
+                    [i for i in [first[2], first[0]] if i]))
+                if len(self.authors) > 1:
+                    if len(self.authors) > 2:
+                        for i in range(1, len(self.authors) - 1):
+                            additional = get_name_splice(self.authors[i])
+                            author_components.append(" ".join([
+                                i for i in [additional[0], additional[2]] if i
+                            ]))
+                    last = get_name_splice(self.authors[-1])
+                    author_components.append(
+                        "and " + " ".join([i
+                                           for i in [last[0], last[2]] if i]))
+                components.append(", ".join(author_components).strip() + ".")
+        if self.title:
+            title_str = italicize(self.title.strip().title() + ".")
+            if self.is_website:
+                title_str = enquote(self.title.strip().title() + ".")
+            components.append(title_str)
+        components.append("N.p.:")
+        if self.is_website:
+            components[-1] = italicize(
+                get_website_root(self.url).capitalize() + ".")
+        components.append("n.p.")
+        if self.publisher:
+            components[-1] = self.publisher.strip().title()
+        is_date = self.date_year or self.date_month or self.date_day
+        if not is_date:
+            components[-1] += ", n.d."
+        else:
+            date = ""
+            if self.is_website:
+                date = " ".join([
+                    str(d)
+                    for d in [self.date_day, self.date_month, self.date_year]
+                    if d
+                ])
+            else:
+                date = str(self.date_year).strip()
+            components[-1] += ", " + date + "."
+        if self.is_website:
+            components.append("Web.")
+            components.append(datetime.datetime.now().strftime("%d %B %Y") +
+                              ".")
+        return " ".join(components)
 
-	def format_mla(self, accessed_today=False):
-		enquote = lambda t: "\"" + t + "\""
-		italicize = lambda t: "<i>" + t + "</i>"
-		ret = ""
-		if self.authors:
-			self.authors.sort(key=lambda a: self.get_name_splice(a)[2])
-			n = len(self.authors)
-			if n > 3:
-				ret += self.get_name_splice(self.authors[0])[2] + " et al. "
-			elif n >= 1:
-				ret += ", ".join([self.get_name_splice(a)[2] for a in self.authors[:-1 if n == 3 else None]])
-				if n == 3:
-					ret += ", and " + self.get_name_splice(self.authors[-1])[2] + ". "
-				else:
-					ret += ". "
-			else:
-				sole = self.authors[0]
-				if " " in sole:
-					last_name = get_name_splice(sole)[2]
-					ret += last_name + ", " + sole[:sole.find(last_name) - 1] + ". "
-				else:
-					ret += sole + ". "
-		if self.title:
-			ret += enquote(self.title + ".") + " "
-		is_date = self.date_year or self.date_month or self.date_day
-		if self.publisher:
-			ret += italicize(self.publisher)
-			if is_date or accessed_today:
-				ret += ", "
-			else:
-				ret += "."
-		if is_date:
-			date = [self.date_day, self.date_month, self.date_year]
-			ret += " ".join([str(d) for d in date if d]) + ". "
-		if accessed_today:
-			ret += "Accessed " + datetime.datetime.now().strftime("%d %B %Y") + "."
-		ret = ret.strip()
-		return ret
+    def format_apa(self):
+        """ Formats this citation class into APA format
 
-	# def format_apa(self):
-	# 	italicize = lambda t: "<i>" + t + "</i>"
-	# 	ret = ""
-	# 	if self.authors:
-	# 		self.authors.sort(key=lambda a: self.get_name_splice(a)[2])
-	# 		n = len(self.authors)
-	# 		# ret += ", ".join([c + ", " + b[0] + ". " + a[0] + "." for (a, b, c) in get_name_splice(a)])
-	# 		if n > 3:
-	# 			ret += self.get_name_splice(self.authors[0]) + " et al. "
-	# 		elif n >= 1:
-	# 			ret += ", ".join([self.get_name_splice(a) for a in self.authors[:-1 if n == 3 else None]])
-	# 			if n == 3:
-	# 				ret += ", and " + self.get_name_splice(self.authors[-1]) + ". "
-	# 			else:
-	# 				ret += ". "
-	# 		else:
-	# 			sole = self.authors[0]
-	# 			if " " in sole:
-	# 				last_name = get_name_splice(sole)
-	# 				ret += last_name + ", " + sole[:sole.find(last_name) - 1] + ". "
-	# 			else:
-	# 				ret += sole + ". "
+        The general APA format is:
+            Last, F. M. (Date). Title. <i>Publisher.</i> Retrieved from URL.
+
+        Source: http://www.easybib.com/reference/guide/apa/general
+        """
+        italicize = lambda t: "<i>" + t + "</i>"
+        ret = ""
+        components = []
+        if self.authors:
+            if self.author_is_organization:
+                components.append(self.authors[0] + ".")
+            else:
+                self.authors.sort(key=lambda a: get_name_splice(a)[2])
+                func = lambda name: name[2] + \
+                       (", " + name[0][0] if name[0] else "") + "." + \
+                       (" " + name[1][0] + "." if name[1] else "")
+                auth_str = ", ".join([
+                    func(_a)
+                    for _a in map(get_name_splice, self.
+                                  authors[:min(len(self.authors), 6)])
+                ])
+                if len(self.authors) > 6:
+                    auth_str += ", et al."
+                components.append(auth_str)
+        is_date = self.date_year or self.date_month or self.date_day
+        if is_date:
+            date_str = ", ".join([str(self.date_year), str(self.date_month)])
+            if self.date_month and self.date_day:
+                date_str += " " + self.date_day
+            date_str = "(" + date_str + ")." if date_str else date_str
+            components.append(date_str)
+        else:
+            components.append("(n.d.).")
+        if self.title:
+            title_str = self.title.strip() + "."
+            if self.authors:
+                components.append(title_str)
+            else:
+                components = [title_str] + components
+        if self.publisher:
+            components.append(italicize(self.publisher.strip() + "."))
+        if self.url:
+            if not is_date:
+                components.append("Retrieved " + datetime.datetime.now(
+                ).strftime("%B %d, %Y") + ", from " + self.url + ".")
+            else:
+                components.append("Retrieved from " + self.url + ".")
+        ret = " ".join(i.strip() for i in components if i.strip())
+        return ret
 
 
+TEST = Citation(
+    title="On Global Warming and Financial Imbalances",
+    authors=[
+        "John Milken", "Michael Wan", "John Test Doe", "John Simerlink",
+        "Balaji Veeramani", "Andrew Kirrilov"
+    ],
+    date=("May", "", 2007),
+    publisher="New Perspectives Quarterly",
+    url="http://test.com")
 
-c = Citation(title="On Global Warming and Financial Imbalances",
-		authors=["John Milken", "Michael Wan", "John Doe", "John Simerlink", "Balaji Veeramani", "Andrew Kirrilov"],
-		date=("May", "", 2007),
-		publisher="New Perspectives Quarterly")
-
-print(c.format_mla())
-
-
-
+print(TEST.format_mla())
+print(TEST.format_apa())
