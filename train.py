@@ -14,12 +14,12 @@ DEFAULT_EPOCH_SIZE = 32
 
 def main():
     parser = argparse.ArgumentParser(description='Train model')
-    parser.add_argument('datafile', dest='data_file', help='path to train file')
+    parser.add_argument('datafile', metavar='data_file', help='path to train file')
     parser.add_argument('images',
-                        dest='image_dir',
+                        metavar='image_dir',
                         help='path to dataset image directory')
     parser.add_argument('labels',
-                        dest='label_dir',
+                        metavar='label_dir',
                         help='path to dataset label directory')
     parser.add_argument('-b',
                         '--batches',

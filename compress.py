@@ -1,4 +1,7 @@
-"""Implements functions for compressing the PRImA layout analysis dataset."""
+"""Implements functions for compressing the PRImA layout analysis dataset.
+
+To use, run the command "python -m dataset_path".
+"""
 import argparse
 import os
 import sys
@@ -10,6 +13,8 @@ from PIL import Image
 DEFAULT_HEIGHT = 384
 DEFAULT_WIDTH = 256
 DEFAULT_OUTPUT_DIR = "dataset-%s-%s" % (DEFAULT_HEIGHT, DEFAULT_WIDTH)
+# If this is set to true, then the compressor will overwrite duplicate images.
+# Otherwise, duplicate images will be skipped.
 DEFAULT_OVERWRITE = False
 
 IMAGE_EXTENSION = ".jpeg"
