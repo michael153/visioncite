@@ -1,9 +1,0 @@
-from datasets import PRImADataset
-
-DESIRED_IMAGE_HEIGHT = 384
-DESIRED_IMAGE_WIDTH  = 256
-
-LABELS = PRImADataset.CLASSES
-
-# This can always be left intact
-DESIRED_RESOLUTION = (DESIRED_IMAGE_WIDTH, DESIRED_IMAGE_HEIGHT)

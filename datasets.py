@@ -5,7 +5,6 @@ from xml.dom import minidom
 import numpy as np
 import torch
 from torch.utils.data import Dataset, DataLoader
-import matplotlib.pyplot as plt
 from PIL import Image, ImageDraw
 
 
@@ -59,7 +58,11 @@ class PRImADataset(Dataset):
         def import_image(image_path):
             image = Image.open(image_path)
             image_array = np.asarray(image)
-            return image_array
+            image_tensor = torch.tensor(image_array)
+            image_tensor = image_tensor.type(torch.FloatTensor)
+            # We have to permute so that channels are located in the first axis.
+            # i.e, we're going from H x W x C to C x H x W, as required by Conv2D.
+            return image_tensor.permute(2, 0, 1)
 
         def xml_to_json(xml_data):
             label_dom = minidom.parse(xml_data)
@@ -130,7 +133,9 @@ class PRImADataset(Dataset):
             mask.setflags(write=1)
             mask[mask == 255] = 0
 
-            return mask
+            mask_tensor = torch.tensor(mask)
+            mask_tensor = mask_tensor.type(torch.LongTensor)
+            return mask_tensor
 
         # Load image
         image_filename = self.image_filenames[index]
@@ -152,9 +157,3 @@ class PRImADataset(Dataset):
 
     def __len__(self):
         return len(self.image_filenames)
-
-
-def visualize_sample(sample):
-    image, mask = sample["image"], sample["label"]
-    plt.imshow(image)
-    plt.imshow(mask, alpha = 0.5)

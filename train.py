@@ -1,3 +1,5 @@
+# TODO: Add external mail functionality. Readd debug. Rename model file. Remove these comments.
+# Example usage: train.py -b 32 -e 16 --disable-cuda small.train data/images data/labels
 import argparse
 
 import torch
@@ -14,12 +16,12 @@ DEFAULT_EPOCH_SIZE = 32
 
 def main():
     parser = argparse.ArgumentParser(description='Train model')
-    parser.add_argument('datafile', metavar='data_file', help='path to train file')
-    parser.add_argument('images',
-                        metavar='image_dir',
+    parser.add_argument('data_file', metavar='datafile', help='path to train file')
+    parser.add_argument('image_dir',
+                        metavar='images',
                         help='path to dataset image directory')
-    parser.add_argument('labels',
-                        metavar='label_dir',
+    parser.add_argument('label_dir',
+                        metavar='labels',
                         help='path to dataset label directory')
     parser.add_argument('-b',
                         '--batches',
@@ -57,7 +59,7 @@ def train(dataset, batch_size, num_epochs, device):
 
     if torch.cuda.device_count() > 1:
         model = nn.DataParallel(model)
-    model.to(device)
+    model = model.to(device)
 
     loss_func = F.cross_entropy
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
