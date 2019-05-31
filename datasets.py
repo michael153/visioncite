@@ -154,6 +154,7 @@ class PRImADataset(Dataset):
         return len(self.image_filenames)
 
 
-def show_mask(image, mask):
+def visualize_sample(sample):
+    image, mask = sample["image"], sample["label"]
     plt.imshow(image)
     plt.imshow(mask, alpha = 0.5)
