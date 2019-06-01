@@ -1,5 +1,4 @@
-# TODO: Add external mail functionality.Rename model file. Remove these comments.
-# Example usage: train.py -b 32 -e 16 --disable-cuda small.train data/images data/labels
+# TODO: Add external mail functionality.
 import argparse
 import datetime
 
@@ -87,23 +86,22 @@ def debug_train(dataset, batch_size, num_epochs, device):
     assert dataset, "Expected non-empty dataset."
 
     start_time = datetime.datetime.now()
-    print("START_TIME=%d" & start_time)
+    print("Starting training at time %s" % start_time, end="\n\n")
+
     print("BATCH_SIZE=%d" % batch_size)
     print("NUM_EPOCHS=%d" % num_epochs)
-    print("DEVICE=%s" % device)
+    print("DEVICE=%s" % device, end="\n\n")
 
     sample = dataset[0]
-    print("INPUT_SHAPE=", sample["image"].shape)
-    print("MASK_SHAPE=", sample["label"].shape)
-    print("DATASET_SIZE=%d" % len(dataset))
-
-    print("\n")
+    print("INPUT_SHAPE=", sample["image"].shape, sep="")
+    print("MASK_SHAPE=", sample["label"].shape, sep="")
+    print("DATASET_SIZE=%d" % len(dataset), end="\n\n")
 
 
 def debug_batch(batch_number, epoch, loss_value):
-    print("BATCH\tEPOCH\tLOSS")
+    if not batch_number and not epoch:
+        print("BATCH\tEPOCH\tLOSS")
     print("%d\t%d\t%.4f" % (batch_number, epoch, loss_value))
-    print("\n")
 
 
 def save_model(model, batch_size, num_epochs):

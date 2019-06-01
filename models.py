@@ -39,7 +39,7 @@ class CNN(nn.Module):
             nn.ReLU())
         self.layer6 = nn.Sequential(
             nn.Conv2d(128, num_classes, kernel_size=3, padding=1),
-            nn.Softmax())
+            nn.Softmax(dim=1))
 
     def forward(self, x): #pylint: disable=arguments-differ
         out = self.layer1(x)
