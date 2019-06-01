@@ -1,6 +1,7 @@
-# TODO: Add external mail functionality. Readd debug. Rename model file. Remove these comments.
+# TODO: Add external mail functionality.Rename model file. Remove these comments.
 # Example usage: train.py -b 32 -e 16 --disable-cuda small.train data/images data/labels
 import argparse
+import datetime
 
 import torch
 import torch.nn as nn
@@ -12,11 +13,14 @@ from models import CNN
 
 DEFAULT_BATCH_SIZE = 64
 DEFAULT_EPOCH_SIZE = 32
+NUM_CLASSES = len(PRImADataset.CLASSES)
 
 
 def main():
     parser = argparse.ArgumentParser(description='Train model')
-    parser.add_argument('data_file', metavar='datafile', help='path to train file')
+    parser.add_argument('data_file',
+                        metavar='datafile',
+                        help='path to train file')
     parser.add_argument('image_dir',
                         metavar='images',
                         help='path to dataset image directory')
@@ -53,9 +57,9 @@ def main():
 
 def train(dataset, batch_size, num_epochs, device):
     dataloader = DataLoader(dataset, batch_size)
+    debug_train(dataset, batch_size, num_epochs, device)
 
-    num_classes = len(PRImADataset.CLASSES)
-    model = CNN(num_classes)
+    model = CNN(NUM_CLASSES)
 
     if torch.cuda.device_count() > 1:
         model = nn.DataParallel(model)
@@ -64,18 +68,51 @@ def train(dataset, batch_size, num_epochs, device):
     loss_func = F.cross_entropy
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
 
-    for _ in range(num_epochs):
-        for batch in dataloader:
+    for epoch in range(num_epochs):
+        for batch_number, batch in enumerate(dataloader):
             images, labels = batch["image"], batch["label"]
 
             predictions = model(images)
             loss = loss_func(predictions, labels, ignore_index=0)
+            debug_batch(batch_number, epoch, loss.item())
 
             loss.backward()
             optimizer.step()
             optimizer.zero_grad()
 
-    torch.save(model.state_dict(), "model-b%s-e%s" % (batch_size, num_epochs))
+    save_model(model, batch_size, num_epochs)
+
+
+def debug_train(dataset, batch_size, num_epochs, device):
+    assert dataset, "Expected non-empty dataset."
+
+    start_time = datetime.datetime.now()
+    print("START_TIME=%d" & start_time)
+    print("BATCH_SIZE=%d" % batch_size)
+    print("NUM_EPOCHS=%d" % num_epochs)
+    print("DEVICE=%s" % device)
+
+    sample = dataset[0]
+    print("INPUT_SHAPE=", sample["image"].shape)
+    print("MASK_SHAPE=", sample["label"].shape)
+    print("DATASET_SIZE=%d" % len(dataset))
+
+    print("\n")
+
+
+def debug_batch(batch_number, epoch, loss_value):
+    print("BATCH\tEPOCH\tLOSS")
+    print("%d\t%d\t%.4f" % (batch_number, epoch, loss_value))
+    print("\n")
+
+
+def save_model(model, batch_size, num_epochs):
+    end_time = datetime.datetime.now()
+    filename = "%s%s%s%s.b%de%d.model" % (end_time.month, end_time.day,
+                                          end_time.hour, end_time.minute,
+                                          batch_size, num_epochs)
+    print("Saving model to %s" % filename)
+    torch.save(model.state_dict(), filename)
 
 
 if __name__ == "__main__":
