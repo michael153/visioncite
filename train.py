@@ -1,4 +1,3 @@
-# TODO: Add external mail functionality.
 import argparse
 import datetime
 
@@ -17,15 +16,24 @@ NUM_CLASSES = len(PRImADataset.CLASSES)
 
 def main():
     parser = argparse.ArgumentParser(description='Train model')
-    parser.add_argument('data_file',
-                        metavar='datafile',
+    parser.add_argument('train_data_file',
+                        metavar='train_datafile',
                         help='path to train file')
-    parser.add_argument('image_dir',
-                        metavar='images',
-                        help='path to dataset image directory')
-    parser.add_argument('label_dir',
-                        metavar='labels',
-                        help='path to dataset label directory')
+    parser.add_argument('x_train_dir',
+                        metavar='x_train',
+                        help='path to train dataset image directory')
+    parser.add_argument('y_train_dir',
+                        metavar='y_train',
+                        help='path to train dataset label directory')
+    parser.add_argument('valid_data_file',
+                        metavar='valid_datafile',
+                        help='path to train file')
+    parser.add_argument('x_valid_dir',
+                        metavar='x_valid',
+                        help='path to validation dataset image directory')
+    parser.add_argument('y_valid_dir',
+                        metavar='y_valid',
+                        help='path to validation dataset label directory')
     parser.add_argument('-b',
                         '--batches',
                         type=int,
@@ -50,13 +58,14 @@ def main():
     else:
         device = "cpu"
 
-    dataset = PRImADataset(args.data_file, args.image_dir, args.label_dir)
-    train(dataset, args.batch_size, args.num_epochs, device)
+    train_dataset = PRImADataset(args.train_data_file, args.x_train_dir, args.y_train_dir)
+    validation_dataset = PRImADataset(args.valid_data_file, args.x_valid_dir, args.y_valid_dir)
+    train(train_dataset, args.batch_size, args.num_epochs, device, validation_dataset)
 
 
-def train(dataset, batch_size, num_epochs, device):
-    dataloader = DataLoader(dataset, batch_size)
-    debug_train(dataset, batch_size, num_epochs, device)
+def train(train_dataset, batch_size, num_epochs, device, validation_dataset=None):
+    dataloader = DataLoader(train_dataset, batch_size)
+    debug_train(train_dataset, batch_size, num_epochs, device)
 
     model = CNN(NUM_CLASSES)
 
@@ -68,6 +77,7 @@ def train(dataset, batch_size, num_epochs, device):
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
 
     for epoch in range(num_epochs):
+        model.train()
         for batch_number, batch in enumerate(dataloader):
             images, labels = batch["image"], batch["label"]
 
@@ -79,14 +89,35 @@ def train(dataset, batch_size, num_epochs, device):
             optimizer.step()
             optimizer.zero_grad()
 
+        if validation_dataset:
+            validate(model, validation_dataset, loss_func, batch_size * 2, epoch)
+
     save_model(model, batch_size, num_epochs)
+
+
+def validate(model, dataset, loss_func, batch_size, epoch):
+    dataloader = DataLoader(dataset, batch_size)
+
+    model.eval()
+    with torch.no_grad():
+        loss = 0
+        for batch in dataloader:
+            images, labels = batch["image"], batch["label"]
+            predictions = model(images)
+            loss += loss_func(predictions, labels, ignore_index=0)
+
+    debug_validate(loss)
+
+
+def debug_validate(loss):
+    print("VALID\n%.4f" % loss.item(), end="\n\n")
 
 
 def debug_train(dataset, batch_size, num_epochs, device):
     assert dataset, "Expected non-empty dataset."
 
     start_time = datetime.datetime.now()
-    print("Starting training at time %s" % start_time, end="\n\n")
+    print("Starting training at time %s." % start_time, end="\n\n")
 
     print("BATCH_SIZE=%d" % batch_size)
     print("NUM_EPOCHS=%d" % num_epochs)
@@ -99,7 +130,7 @@ def debug_train(dataset, batch_size, num_epochs, device):
 
 
 def debug_batch(batch_number, epoch, loss_value):
-    if not batch_number and not epoch:
+    if not batch_number:
         print("BATCH\tEPOCH\tLOSS")
     print("%d\t%d\t%.4f" % (batch_number, epoch, loss_value))
 
