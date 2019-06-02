@@ -12,6 +12,7 @@ from models import CNN
 DEFAULT_BATCH_SIZE = 64
 DEFAULT_EPOCH_SIZE = 32
 NUM_CLASSES = len(PRImADataset.CLASSES)
+DEFAULT_DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
 
 
 def main():
@@ -58,12 +59,19 @@ def main():
     else:
         device = "cpu"
 
-    train_dataset = PRImADataset(args.train_data_file, args.x_train_dir, args.y_train_dir)
-    validation_dataset = PRImADataset(args.valid_data_file, args.x_valid_dir, args.y_valid_dir)
-    train(train_dataset, args.batch_size, args.num_epochs, device, validation_dataset)
+    train_dataset = PRImADataset(args.train_data_file, args.x_train_dir,
+                                 args.y_train_dir)
+    validation_dataset = PRImADataset(args.valid_data_file, args.x_valid_dir,
+                                      args.y_valid_dir)
+    train(train_dataset, args.batch_size, args.num_epochs, device,
+          validation_dataset)
 
 
-def train(train_dataset, batch_size, num_epochs, device, validation_dataset=None):
+def train(train_dataset,
+          batch_size=DEFAULT_BATCH_SIZE,
+          num_epochs=DEFAULT_EPOCH_SIZE,
+          device=DEFAULT_DEVICE,
+          validation_dataset=None):
     dataloader = DataLoader(train_dataset, batch_size)
     debug_train(train_dataset, batch_size, num_epochs, device)
 
@@ -83,6 +91,7 @@ def train(train_dataset, batch_size, num_epochs, device, validation_dataset=None
             labels = batch["label"].to(device)
 
             predictions = model(images)
+            # Why do we ignore index zero here?
             loss = loss_func(predictions, labels, ignore_index=0)
             debug_batch(batch_number, epoch, loss.item())
 
@@ -91,12 +100,13 @@ def train(train_dataset, batch_size, num_epochs, device, validation_dataset=None
             optimizer.zero_grad()
 
         if validation_dataset:
-            validate(model, validation_dataset, loss_func, batch_size * 2, epoch)
+            validate(model, validation_dataset, device, loss_func,
+                     batch_size * 2)
 
     save_model(model, batch_size, num_epochs)
 
 
-def validate(model, dataset, loss_func, batch_size, epoch):
+def validate(model, dataset, device, loss_func, batch_size):
     dataloader = DataLoader(dataset, batch_size)
 
     model.eval()
@@ -123,6 +133,8 @@ def debug_train(dataset, batch_size, num_epochs, device):
 
     print("BATCH_SIZE=%d" % batch_size)
     print("NUM_EPOCHS=%d" % num_epochs)
+    if torch.cuda.device_count() > 1:
+        print("NUM_GPUS=%d" % torch.cuda.device_count())
     print("DEVICE=%s" % device, end="\n\n")
 
     sample = dataset[0]

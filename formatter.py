@@ -99,8 +99,7 @@ class Citation:
                             ]))
                     last = get_name_splice(self.authors[-1])
                     author_components.append(
-                        "and " + " ".join([i
-                                           for i in [last[0], last[2]] if i]))
+                        "and " + " ".join([i for i in [last[0], last[2]] if i]))
                 components.append(", ".join(author_components).strip() + ".")
         if self.title:
             title_str = italicize(self.title.strip().title() + ".")
@@ -155,8 +154,8 @@ class Citation:
                        (" " + name[1][0] + "." if name[1] else "")
                 auth_str = ", ".join([
                     func(_a)
-                    for _a in map(get_name_splice, self.
-                                  authors[:min(len(self.authors), 6)])
+                    for _a in map(get_name_splice,
+                                  self.authors[:min(len(self.authors), 6)])
                 ])
                 if len(self.authors) > 6:
                     auth_str += ", et al."
@@ -180,23 +179,24 @@ class Citation:
             components.append(italicize(self.publisher.strip() + "."))
         if self.url:
             if not is_date:
-                components.append("Retrieved " + datetime.datetime.now(
-                ).strftime("%B %d, %Y") + ", from " + self.url + ".")
+                components.append(
+                    "Retrieved " +
+                    datetime.datetime.now().strftime("%B %d, %Y") + ", from " +
+                    self.url + ".")
             else:
                 components.append("Retrieved from " + self.url + ".")
         ret = " ".join(i.strip() for i in components if i.strip())
         return ret
 
 
-TEST = Citation(
-    title="On Global Warming and Financial Imbalances",
-    authors=[
-        "John Milken", "Michael Wan", "John Test Doe", "John Simerlink",
-        "Balaji Veeramani", "Andrew Kirrilov"
-    ],
-    date=("May", "", 2007),
-    publisher="New Perspectives Quarterly",
-    url="http://test.com")
+TEST = Citation(title="On Global Warming and Financial Imbalances",
+                authors=[
+                    "John Milken", "Michael Wan", "John Test Doe",
+                    "John Simerlink", "Balaji Veeramani", "Andrew Kirrilov"
+                ],
+                date=("May", "", 2007),
+                publisher="New Perspectives Quarterly",
+                url="http://test.com")
 
 print(TEST.format_mla())
 print(TEST.format_apa())

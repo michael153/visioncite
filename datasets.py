@@ -11,20 +11,9 @@ from PIL import Image, ImageDraw
 class PRImADataset(Dataset):
     """Abstraction for the PRImA Layout Analysis Dataset."""
 
-    CLASSES = (
-        'generic',
-        'caption',
-        'page-number',
-        'credit',
-        'paragraph',
-        'footer',
-        'logo',
-        'heading',
-        'drop-capital',
-        'floating',
-        'header',
-        'punch-hole'
-    )
+    CLASSES = ('generic', 'caption', 'page-number', 'credit', 'paragraph',
+               'footer', 'logo', 'heading', 'drop-capital', 'floating',
+               'header', 'punch-hole')
 
     def __init__(self, data_file, image_dir, label_dir, transform=None):
         """Initializes a PRImADataset object.
@@ -106,7 +95,6 @@ class PRImADataset(Dataset):
 
                 data['labels'] = labels
                 return data
-
 
         def json_to_mask(json_data):
             """Generates the label mask for an image given its ground truth JSON data.

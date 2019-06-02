@@ -41,7 +41,7 @@ class CNN(nn.Module):
             nn.Conv2d(128, num_classes, kernel_size=3, padding=1),
             nn.Softmax(dim=1))
 
-    def forward(self, x): #pylint: disable=arguments-differ
+    def forward(self, x):  #pylint: disable=arguments-differ
         out = self.layer1(x)
         out = self.layer2(out)
         out = self.layer3(out)

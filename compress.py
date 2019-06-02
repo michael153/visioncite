@@ -356,5 +356,6 @@ def get_identifier(extensionless_filename):
     """Returns the four digits at the end of a filename."""
     return int(extensionless_filename[-4:]) if extensionless_filename else 0
 
+
 if __name__ == "__main__":
     main()
