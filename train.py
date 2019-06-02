@@ -79,7 +79,8 @@ def train(train_dataset, batch_size, num_epochs, device, validation_dataset=None
     for epoch in range(num_epochs):
         model.train()
         for batch_number, batch in enumerate(dataloader):
-            images, labels = batch["image"], batch["label"]
+            images = batch["image"].to(device)
+            labels = batch["label"].to(device)
 
             predictions = model(images)
             loss = loss_func(predictions, labels, ignore_index=0)
@@ -102,7 +103,8 @@ def validate(model, dataset, loss_func, batch_size, epoch):
     with torch.no_grad():
         loss = 0
         for batch in dataloader:
-            images, labels = batch["image"], batch["label"]
+            images = batch["image"].to(device)
+            labels = batch["label"].to(device)
             predictions = model(images)
             loss += loss_func(predictions, labels, ignore_index=0)
 

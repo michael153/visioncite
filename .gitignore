@@ -12,6 +12,6 @@ __pycache__/
 *~
 
 # Project Specific
-assets/segments
-assets/data/images
-assets/data/json
+images
+labels
+*.train
