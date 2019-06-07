@@ -21,7 +21,7 @@ def visualize(mask, image=None):
         >>> model = CNN(len(PRImADataset.CLASSES))
         >>> model.load_state_dict(torch.load("662150.b64e256.model"))
         >>>
-        >>> dataset = PRImADataset("small.train", "images", "labels")
+        >>> dataset = PRImADataset("images", "labels")
         >>> # We're arbitrarily choosing the first image in the dataset
         >>> image = dataset[0]["image"]
         >>> # We need to reshape the input so that the model will accept it

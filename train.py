@@ -1,6 +1,7 @@
 import argparse
 import datetime
 
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -9,7 +10,7 @@ from torch.utils.data import DataLoader
 from datasets import PRImADataset
 from models import CNN
 
-DEFAULT_BATCH_SIZE = 64
+DEFAULT_BATCH_SIZE = 16
 DEFAULT_EPOCH_SIZE = 32
 NUM_CLASSES = len(PRImADataset.CLASSES)
 DEFAULT_DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
@@ -17,18 +18,12 @@ DEFAULT_DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
 
 def main():
     parser = argparse.ArgumentParser(description='Train model')
-    parser.add_argument('train_data_file',
-                        metavar='train_datafile',
-                        help='path to train file')
     parser.add_argument('x_train_dir',
                         metavar='x_train',
                         help='path to train dataset image directory')
     parser.add_argument('y_train_dir',
                         metavar='y_train',
                         help='path to train dataset label directory')
-    parser.add_argument('valid_data_file',
-                        metavar='valid_datafile',
-                        help='path to train file')
     parser.add_argument('x_valid_dir',
                         metavar='x_valid',
                         help='path to validation dataset image directory')
@@ -59,10 +54,10 @@ def main():
     else:
         device = "cpu"
 
-    train_dataset = PRImADataset(args.train_data_file, args.x_train_dir,
-                                 args.y_train_dir)
-    validation_dataset = PRImADataset(args.valid_data_file, args.x_valid_dir,
-                                      args.y_valid_dir)
+    train_dataset = PRImADataset(args.x_train_dir,
+                                 args.y_train_dir, size=3)
+    validation_dataset = PRImADataset(args.x_valid_dir,
+                                      args.y_valid_dir, size=3)
     train(train_dataset, args.batch_size, args.num_epochs, device,
           validation_dataset)
 
@@ -107,21 +102,47 @@ def train(train_dataset,
 
 def validate(model, dataset, device, loss_func, batch_size):
     dataloader = DataLoader(dataset, batch_size)
+    batch_accuracies = []
 
     model.eval()
     with torch.no_grad():
-        loss = 0
+        total_loss = 0
         for batch in dataloader:
             images = batch["image"].to(device)
+            labels = batch["label"].to(device)
 
             predictions = model(images)
-            loss += loss_func(predictions, labels)
+            batch_accuracy = accuracy(predictions, labels)
 
-    debug_validate(loss)
+            total_loss += loss_func(predictions, labels)
+            batch_accuracies.append(batch_accuracy)
+
+    average_batch_accuracy = sum(batch_accuracies) / len(batch_accuracies)
+    debug_validate(total_loss, average_batch_accuracy)
 
 
-def debug_validate(loss):
-    print("VALID\n%.4f" % loss.item(), end="\n\n")
+def accuracy(predictions, labels):
+    accuracies = []
+    for prediction, label in zip(predictions, labels):
+        # torch.Size([1, 12, 384, 256]) => torch.Size([12, 384, 256])
+        prediction = prediction.squeeze()
+        # torch.Size([12, 384, 256]) => torch.Size([384, 256])
+        mask = prediction.argmax(dim=0)
+        difference = torch.abs(mask - label)
+        # This a 384x256 matrix where each element is 1 if the prediction for
+        # that pixel was correct and 0 otherwise.
+        correct = difference.clamp(0, 1)
+
+        num_elements = np.prod(correct.shape)
+        num_correct = (num_elements - torch.sum(correct)).float()
+        accuracies.append(num_correct / num_elements)
+
+    return sum(accuracies) / len(accuracies)
+
+
+def debug_validate(loss, accuracy):
+    print("VALID\tACCURACY")
+    print("%.4f\t%.4f" % (loss.item(), accuracy), end="\n\n")
 
 
 def debug_train(dataset, batch_size, num_epochs, device):

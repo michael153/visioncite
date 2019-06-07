@@ -4,7 +4,7 @@ from xml.dom import minidom
 
 import numpy as np
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 from PIL import Image, ImageDraw
 
 
@@ -15,28 +15,32 @@ class PRImADataset(Dataset):
                'footer', 'logo', 'heading', 'drop-capital', 'floating',
                'header', 'punch-hole')
 
-    def __init__(self, data_file, image_dir, label_dir, transform=None):
+    def __init__(self, image_dir, label_dir, size=None, transform=None):
         """Initializes a PRImADataset object.
 
-        The image directory and label directory should correspond to data of
-        matching dimensions.
-
-        The train file should contain newline-separated pairs of image-label
-        filenames. For example, "00000086.jpeg 00000086.xml".
+        I'm making a few assumptions here:
+        * Every file in the image_dir is an image
+        * Every image has exactly one corresponding label
+        * The label corresponding to an image named "00000xyz" is named either
+          "00000xyz" or "pc-00000xyz". xyz represent a sequence of three digits
+          here.
+        * Labels use the ".xml" extension.
 
         Arguments:
-            data_file: A path to a train file (e.g, ./32020191045.train).
             image_dir: The path to the dataset images (e.g, ./images-384x256).
             label_dir: The path to the dataset labels (e.g, ./labels-384x256).
             transform: Does nothing for now. I might implement this later.
         """
-        with open(data_file) as file:
-            self.image_filenames = []
-            self.label_filenames = []
-            for line in file.readlines():
-                image_filename, label_filename = line.split()
-                self.image_filenames.append(image_filename)
+        self.image_filenames = [image_filename for image_filename in os.listdir(image_dir)][:size]
+        self.label_filenames = []
+        for image_filename in self.image_filenames:
+            # Replace the image filename extension with ".xml"
+            label_filename = os.path.splitext(image_filename)[0] + ".xml"
+            label_path = os.path.join(label_dir, label_filename)
+            if os.path.isfile(label_path):
                 self.label_filenames.append(label_filename)
+            else:
+                self.label_filenames.append("pc-" + label_filename)
 
         self.image_dir = image_dir
         self.label_dir = label_dir
