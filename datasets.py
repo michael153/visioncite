@@ -15,7 +15,7 @@ class PRImADataset(Dataset):
                'footer', 'logo', 'heading', 'drop-capital', 'floating',
                'header', 'punch-hole')
 
-    def __init__(self, image_dir, label_dir, size=None, transform=None):
+    def __init__(self, image_dir, label_dir, transform=None):
         """Initializes a PRImADataset object.
 
         I'm making a few assumptions here:
@@ -31,7 +31,7 @@ class PRImADataset(Dataset):
             label_dir: The path to the dataset labels (e.g, ./labels-384x256).
             transform: Does nothing for now. I might implement this later.
         """
-        self.image_filenames = [image_filename for image_filename in os.listdir(image_dir)][:size]
+        self.image_filenames = [image_filename for image_filename in os.listdir(image_dir)]
         self.label_filenames = []
         for image_filename in self.image_filenames:
             # Replace the image filename extension with ".xml"
