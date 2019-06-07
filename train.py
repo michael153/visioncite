@@ -82,7 +82,7 @@ def train(train_dataset,
     model = model.to(device)
 
     loss_func = F.cross_entropy
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+    optimizer = torch.optim.Adam(model.parameters())
 
     for epoch in range(num_epochs):
         model.train()
@@ -91,8 +91,7 @@ def train(train_dataset,
             labels = batch["label"].to(device)
 
             predictions = model(images)
-            # Why do we ignore index zero here?
-            loss = loss_func(predictions, labels, ignore_index=0)
+            loss = loss_func(predictions, labels)
             debug_batch(batch_number, epoch, loss.item())
 
             loss.backward()
@@ -114,9 +113,9 @@ def validate(model, dataset, device, loss_func, batch_size):
         loss = 0
         for batch in dataloader:
             images = batch["image"].to(device)
-            labels = batch["label"].to(device)
+
             predictions = model(images)
-            loss += loss_func(predictions, labels, ignore_index=0)
+            loss += loss_func(predictions, labels)
 
     debug_validate(loss)
 
@@ -155,7 +154,7 @@ def save_model(model, batch_size, num_epochs):
                                           end_time.hour, end_time.minute,
                                           batch_size, num_epochs)
     print("Saving model to %s" % filename)
-    torch.save(model.state_dict(), filename)
+    torch.save(model.module.state_dict(), filename)
 
 
 if __name__ == "__main__":
