@@ -55,9 +55,9 @@ def main():
         device = "cpu"
 
     train_dataset = PRImADataset(args.x_train_dir,
-                                 args.y_train_dir, size=3)
+                                 args.y_train_dir)
     validation_dataset = PRImADataset(args.x_valid_dir,
-                                      args.y_valid_dir, size=3)
+                                      args.y_valid_dir)
     train(train_dataset, args.batch_size, args.num_epochs, device,
           validation_dataset)
 

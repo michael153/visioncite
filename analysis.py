@@ -1,8 +1,12 @@
 """This module implements function for analyzing models and their predictions."""
+import random
+
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
 from datasets import PRImADataset
+from models import CNN
+import torch
 
 
 def visualize(mask, image=None):
@@ -25,7 +29,7 @@ def visualize(mask, image=None):
         >>> # We're arbitrarily choosing the first image in the dataset
         >>> image = dataset[0]["image"]
         >>> # We need to reshape the input so that the model will accept it
-        >>> batch = torch.stack([sample])
+        >>> batch = torch.stack([image])
         >>>
         >>> prediction = model(batch)
         >>> mask = prediction_to_mask(prediction)
@@ -61,3 +65,15 @@ def prediction_to_mask(prediction):
     # torch.Size([12, 384, 256]) => torch.Size([384, 256])
     mask = prediction.argmax(dim=0)
     return mask
+
+
+def visualize_random_sample(model_path):
+    model = CNN(len(PRImADataset.CLASSES))
+    model.load_state_dict(torch.load(model_path))
+    dataset = PRImADataset("xtrain", "ytrain")
+    index = random.randrange(0, len(dataset))
+    image = dataset[index]["image"]
+    batch = torch.stack([image])
+    prediction = model(batch)
+    mask = prediction_to_mask(prediction)
+    visualize(mask, image)
