@@ -171,7 +171,7 @@ def debug_batch(batch_number, epoch, loss_value):
 
 def save_model(model, batch_size, num_epochs):
     end_time = datetime.datetime.now()
-    filename = "%s%s%s%s.b%de%d.model" % (end_time.month, end_time.day,
+    filename = "%s%s%s%s.b%de%d.pt" % (end_time.month, end_time.day,
                                           end_time.hour, end_time.minute,
                                           batch_size, num_epochs)
     print("Saving model to %s" % filename)
