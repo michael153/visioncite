@@ -1,10 +1,16 @@
+#!/bin/bash
+PYTHON_URL=https://www.python.org/ftp/python/3.6.8/Python-3.6.8.tgz
+PYTHON_DIRECTORY=Python-3.6.8.tgz
+
+curl -o $PYTHON_DIRECTORY $PYTHON_URL
+
 mkdir python
-tar -xzf Python-3.6.8.tgz
+tar -xzf $PYTHON_DIRECTORY
 
 LD_LIBRARY_PATH=/usr/local/lib64/:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH
 
-cd Python-3.6.8
+cd $PYTHON_DIRECTORY
 ./configure --prefix=$(pwd)/../python
 make
 make install
@@ -23,16 +29,13 @@ then
     cp python/bin/pip3 python/bin/pip
 fi
 
-export PATH=$(pwd)/python/bin:$PATH 
+export PATH=$(pwd)/python/bin:$PATH
+# Instasll dependencies here!
 pip install --upgrade pip
-pip install tensorflow==1.5
-pip install keras
 pip install pillow
 pip install torch torchvision
 pip install -U matplotlib
 pip install sendgrid
-pip install python-dotenv
- 
+
 tar -czvf python.tar.gz python/
 exit
-

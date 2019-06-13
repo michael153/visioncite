@@ -1,23 +1,22 @@
 """Implements functions for traning a neural network.
 
-usage: train.py [-h] [-b BATCH_SIZE] [-e NUM_EPOCHS] [--disable-cuda]
-                x_train y_train x_test y_test
+usage: train.py [-h] [--xtest XTEST] [--ytest YTEST] [--batches BATCH_SIZE]
+                [--epochs NUM_EPOCHS] [--disable-cuda]
+                xtrain ytrain
 
 Train model
 
 positional arguments:
-  x_train               path to train dataset image directory
-  y_train               path to train dataset label directory
-  x_test                path to validation dataset image directory
-  y_test                path to validation dataset label directory
+  xtrain                path to train dataset image directory
+  ytrain                path to train dataset label directory
 
 optional arguments:
   -h, --help            show this help message and exit
-  -b BATCH_SIZE, --batches BATCH_SIZE
-                        number of samples to propogate (default: 64)
-  -e NUM_EPOCHS, --epochs NUM_EPOCHS
-                        number of passes through dataset (default: 32)
-  --disable-cuda        Disable CUDA
+  --xtest XTEST         path to validation dataset image directory
+  --ytest YTEST         path to validation dataset label directory
+  --batches BATCH_SIZE  number of samples to propogate (default: 64)
+  --epochs NUM_EPOCHS   number of passes through dataset (default: 32)
+  --disable-cuda        disable CUDA support
 """
 import argparse
 import datetime
@@ -44,25 +43,27 @@ def main():
     """Main function."""
     parser = argparse.ArgumentParser(description='Train model')
     parser.add_argument('x_train_dir',
-                        metavar='x_train',
+                        metavar='xtrain',
                         help='path to train dataset image directory')
     parser.add_argument('y_train_dir',
-                        metavar='y_train',
+                        metavar='ytrain',
                         help='path to train dataset label directory')
-    parser.add_argument('x_test_dir',
-                        metavar='x_test',
+    parser.add_argument('--xtest',
+                        dest="x_test_dir",
+                        metavar="XTEST",
+                        default=None,
                         help='path to validation dataset image directory')
-    parser.add_argument('y_test_dir',
-                        metavar='y_test',
+    parser.add_argument('--ytest',
+                        dest="y_test_dir",
+                        metavar="YTEST",
+                        default=None,
                         help='path to validation dataset label directory')
-    parser.add_argument('-b',
-                        '--batches',
+    parser.add_argument('--batches',
                         type=int,
                         dest='batch_size',
                         default=DEFAULT_BATCH_SIZE,
                         help='number of samples to propogate (default: 64)')
-    parser.add_argument('-e',
-                        '--epochs',
+    parser.add_argument('--epochs',
                         type=int,
                         dest='num_epochs',
                         default=DEFAULT_EPOCH_SIZE,
@@ -70,7 +71,7 @@ def main():
     parser.add_argument('--disable-cuda',
                         dest='cuda_disabled',
                         action='store_true',
-                        help='Disable CUDA')
+                        help='disable CUDA support')
 
     args = parser.parse_args()
 
@@ -81,7 +82,10 @@ def main():
 
     model = ModelType(*MODEL_ARGS, **MODEL_KWARGS)
     train_dataset = PRImADataset(args.x_train_dir, args.y_train_dir)
-    validation_dataset = PRImADataset(args.x_test_dir, args.y_test_dir)
+    if args.x_test_dir and args.y_test_dir:
+        validation_dataset = PRImADataset(args.x_test_dir, args.y_test_dir)
+    else:
+        validation_dataset = None
 
     train(model,
           train_dataset,

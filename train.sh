@@ -11,9 +11,9 @@ mkdir home
 export HOME=$(pwd)/home
 
 # Train model
-train.py -b $BATCH_SIZE -e $NUM_EPOCHS xtrain ytrain xtest ytest &> train.log
+train.py --batches $BATCH_SIZE --epochs $NUM_EPOCHS xtrain ytrain xtest ytest &> train.log
 
-# Mail Results
+# Mail results
 mail.py "Training Results" "$(cat train.log)" bveeramani@berkeley.edu
 mail.py "Training Results" "$(cat train.log)" m.wan@berkeley.edu
 

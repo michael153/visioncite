@@ -1,12 +1,12 @@
 universe = vanilla
 
-log = interactive.log
-output = interactive.out 
-error = interactive.err
+log = compile.log
+output = compile.out
+error = compile.err
 
 +IsBuildJob = true
-requirements = (OpSysMajorVer =?= 7) && ( IsBuildSlot == true )
-transfer_input_files = Python-3.6.8.tgz, compile.sh
+requirements = (OpSysMajorVer =?= 7) && (IsBuildSlot == true)
+transfer_input_files = compile.sh
 
 request_cpus = 1
 request_memory = 8GB

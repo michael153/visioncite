@@ -4,24 +4,23 @@ Eyecite is an in-progress tool that allows users to accurately cite webpages.
 
 ### Usage
 ```
-usage: train.py [-h] [-b BATCH_SIZE] [-e NUM_EPOCHS] [--disable-cuda]
-                x_train y_train x_test y_test
+usage: train.py [-h] [--xtest XTEST] [--ytest YTEST] [--batches BATCH_SIZE]
+                [--epochs NUM_EPOCHS] [--disable-cuda]
+                xtrain ytrain
 
 Train model
 
 positional arguments:
-  x_train               path to train dataset image directory
-  y_train               path to train dataset label directory
-  x_test                path to validation dataset image directory
-  y_test                path to validation dataset label directory
+  xtrain                path to train dataset image directory
+  ytrain                path to train dataset label directory
 
 optional arguments:
   -h, --help            show this help message and exit
-  -b BATCH_SIZE, --batches BATCH_SIZE
-                        number of samples to propogate (default: 64)
-  -e NUM_EPOCHS, --epochs NUM_EPOCHS
-                        number of passes through dataset (default: 32)
-  --disable-cuda        Disable CUDA
+  --xtest XTEST         path to validation dataset image directory
+  --ytest YTEST         path to validation dataset label directory
+  --batches BATCH_SIZE  number of samples to propogate (default: 64)
+  --epochs NUM_EPOCHS   number of passes through dataset (default: 32)
+  --disable-cuda        disable CUDA support
 ```
 
 ### Dependencies
