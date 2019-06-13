@@ -1,10 +1,10 @@
-# Visioncite
+# Eyecite
 
-Visioncite is an in progress project that attempts to automatically cite an article using computer vision and state-of-the-art machine learning techniques.
+Eyecite is an in-progress tool that allows users to accurately cite webpages.
 
-## Authors
-* [Michael Wan](http://michaelwan2000.com)
-* Balaji Veeramani
+# Usage
+
+
 
 ## Dependencies
 - numpy
