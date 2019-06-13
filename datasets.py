@@ -1,11 +1,11 @@
-"""asdf"""
+"""Implements classes for preprocessing and loading datasets."""
 import os
 from xml.dom import minidom
 
 import numpy as np
+from PIL import Image, ImageDraw
 import torch
 from torch.utils.data import Dataset
-from PIL import Image, ImageDraw
 
 
 class PRImADataset(Dataset):
