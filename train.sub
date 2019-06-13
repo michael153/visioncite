@@ -1,0 +1,16 @@
+universe = vanilla
+
+executable = train.sh
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+transfer_input_files = python.tar.gz, train.py, images, labels
+	
+log = train_$(Cluster).log
+error = train_$(Cluster)_$(Process).err
+output = train_$(Cluster)_$(Process).out
+
+request_gpus = 1
+request_memory = 8GB
+request_disk = 2.5GB
+
+queue 1
