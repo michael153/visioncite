@@ -10,6 +10,9 @@ interactive session. You should see a zipped file named `python.tar.gz` in
 your home directory after following these instructions.
 
 ### Usage
+Download the directories `xtrain`, `ytrain`, `xtest`, `ytest` from the Google
+Drive. Then, run the command `condor_submit train.sub`.
+
 ```
 usage: train.py [-h] [--xtest XTEST] [--ytest YTEST] [--batches BATCH_SIZE]
                 [--epochs NUM_EPOCHS] [--disable-cuda]
