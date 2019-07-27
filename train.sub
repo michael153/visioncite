@@ -3,7 +3,7 @@ universe = vanilla
 executable = train.sh
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
-transfer_input_files = python.tar.gz, visioncite
+transfer_input_files = datasets.py, mail.py, models.py, training.py, train.py, WLA-500c
 
 log = train.log
 error = train.err
