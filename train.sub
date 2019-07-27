@@ -3,7 +3,7 @@ universe = vanilla
 executable = train.sh
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
-transfer_input_files = datasets.py, mail.py, models.py, training.py, train.py, WLA-500c, metadata.json, python.tar.gz
+transfer_input_files = datasets.py, mail.py, models.py, training.py, train.py, WLA-500c1, WLA-500c2, metadata1.json, metadata2.json, python.tar.gz
 
 log = train.log
 error = train.err
