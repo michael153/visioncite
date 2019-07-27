@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 
 DEFAULT_BATCH_SIZE = 32
 DEFAULT_EPOCH_SIZE = 64
+OPTIMAL_DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
 
 
 #pylint: disable=too-many-arguments, too-many-locals
@@ -16,10 +17,15 @@ def train(model,
     dataloader = DataLoader(dataset, batch_size, shuffle=True)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
+    model.to(OPTIMAL_DEVICE)
+
     for epoch in range(num_epochs):
         model.train()
         for observations, labels in dataloader:
             model.zero_grad()
+
+            observations = observations.to(OPTIMAL_DEVICE)
+            labels = labels.to(OPTIMAL_DEVICE)
 
             predictions = model(observations)
             # torch.Size([N, 1]) => torch.Size([N])
@@ -42,10 +48,16 @@ def test(model, dataset, batch_size=DEFAULT_BATCH_SIZE * 2):
     dataloader = DataLoader(dataset, batch_size)
     batch_accuracies = []
 
+    model = model.to(OPTIMAL_DEVICE)
+
     model.eval()
     with torch.no_grad():
         for observations, labels in dataloader:
+            observations = observations.to(OPTIMAL_DEVICE)
+            labels = labels.to(OPTIMAL_DEVICE)
+
             predictions = model(observations)
+
             batch_accuracy = average_accuracy(predictions, labels)
             batch_accuracies.append(batch_accuracy)
 

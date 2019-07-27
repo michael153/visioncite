@@ -1,6 +1,6 @@
 import torch
 import torch.nn.functional as F
-from torch.utils.data import random_split
+from torch.utils.data import random_split, ConcatDataset
 
 from training import train, save
 from datasets import VIADataset
@@ -26,8 +26,11 @@ def transform(image, mask):
     return image, mask
 
 
-dataset = VIADataset("WLA-500c", "metadata.json", transform=transform)
-model = CNN(len(dataset.CLASSES))
+dataset1 = VIADataset("WLA-500c1", "metadata1.json", transform=transform) # Balaji's data
+dataset2 = VIADataset("WLA-500c2", "metadata2.json", transform=transform) # Michael's data
+dataset = ConcatDataset([dataset1, dataset2])
+
+model = CNN(len(VIADataset.CLASSES))
 traning_dataset, testing_dataset = random_split(dataset, (2, len(dataset) - 2))
 train(model, traning_dataset, batch_size=2, num_epochs=1)
 save(model, "model.pt")
