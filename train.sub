@@ -3,11 +3,11 @@ universe = vanilla
 executable = train.sh
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
-transfer_input_files = python.tar.gz, train.py, xtrain, ytrain, xtest, ytest
+transfer_input_files = python.tar.gz, visioncite
 
-log = train_$(Cluster).log
-error = train_$(Cluster)_$(Process).err
-output = train_$(Cluster)_$(Process).out
+log = train.log
+error = train.err
+output = train.out
 
 request_gpus = 1
 request_memory = 8GB

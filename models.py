@@ -5,7 +5,7 @@ import torch.nn.functional as F
 
 class CNN(nn.Module):
     """A convolutional neural network that segments images into classes."""
-    
+
     def __init__(self, num_classes):
         super(CNN, self).__init__()
         self.layer1 = nn.Sequential(

@@ -34,7 +34,6 @@ export PATH=$(pwd)/python/bin:$PATH
 pip install --upgrade pip
 pip install pillow
 pip install torch torchvision
-pip install -U matplotlib
 pip install sendgrid
 
 tar -czvf python.tar.gz python/

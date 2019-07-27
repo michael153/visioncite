@@ -1,4 +1,5 @@
-"""Implements classes for preprocessing and loading datasets."""
+"""Implements custom datasets."""
+import json
 import os
 from xml.dom import minidom
 
@@ -6,6 +7,102 @@ import numpy as np
 from PIL import Image, ImageDraw
 import torch
 from torch.utils.data import Dataset
+import torch.nn.functional as F
+
+
+def import_image(image_path):
+    image = Image.open(image_path)
+    image_array = np.asarray(image)
+    image_tensor = torch.tensor(image_array, dtype=torch.float)
+    # Remove alpha channel, if one exists
+    image_tensor = image_tensor[:, :, :3]
+    # We have to permute so that channels are located in the first axis.
+    # i.e, we're going from H x W x C to C x H x W, as required by Conv2D.
+    return image_tensor.permute(2, 0, 1)
+
+
+class VIADataset(Dataset):
+
+    CLASSES = ("title", "author", "date", "website", "image", "paragraph",
+               "publisher", "other")
+
+    def __init__(self, image_dir, label_json, transform=None):
+        self.transform = transform
+
+        self.image_filenames = []
+        for image_filename in os.listdir(image_dir):
+            self.image_filenames.append(image_filename)
+
+        self.filename_to_image = {}
+        for image_filename in os.listdir(image_dir):
+            image_path = os.path.join(image_dir, image_filename)
+            image = import_image(image_path)
+            self.filename_to_image[image_filename] = image
+
+        def draw_poly(shape_attributes, image, color):
+            draw = ImageDraw.Draw(image)
+            x_values = shape_attributes["all_points_x"]
+            y_values = shape_attributes["all_points_y"]
+            xy_points = list(zip(x_values, y_values))
+            draw.polygon(xy_points, fill=color, outline=color)
+
+        #pylint: disable=invalid-name
+        def draw_rect(shape_attributes, image, color):
+            draw = ImageDraw.Draw(image)
+            x0, y0 = shape_attributes["x"], shape_attributes["y"]
+            x1 = x0 + shape_attributes["width"]
+            y1 = y0 + shape_attributes["height"]
+            xy_points = [(x0, y0), (x1, y1)]
+            draw.rectangle(xy_points, fill=color, outline=color)
+
+        def create_mask(regions, size):
+            overlay = Image.new('L', size, len(self.CLASSES) - 1)
+
+            for region in regions:
+                shape_attributes = region["shape_attributes"]
+                shape_type = shape_attributes["name"]
+
+                region_label = region["region_attributes"]["type"]
+                if not region_label in self.CLASSES:
+                    continue
+                color = self.CLASSES.index(region_label)
+
+                if shape_type == "rect":
+                    draw_rect(shape_attributes, overlay, color)
+                elif shape_type == "polygon":
+                    draw_poly(shape_attributes, overlay, color)
+
+            mask = np.asarray(overlay).astype(int)
+            return torch.tensor(mask, dtype=torch.float)
+
+        with open(label_json) as json_file:
+            image_metadata = json.load(json_file)["_via_img_metadata"]
+
+        self.filename_to_mask = {}
+        for image_key in image_metadata:
+            filename = image_metadata[image_key]["filename"]
+            if not filename in self.image_filenames:
+                continue
+
+            image = self.filename_to_image[filename]
+            height, width = image.shape[1], image.shape[2]
+
+            regions = image_metadata[image_key]["regions"]
+            mask = create_mask(regions, (width, height))
+            self.filename_to_mask[filename] = mask
+
+    def __getitem__(self, index):
+        image_filename = self.image_filenames[index]
+        image = self.filename_to_image[image_filename]
+        mask = self.filename_to_mask[image_filename]
+
+        if self.transform:
+            image, mask = self.transform(image, mask)
+
+        return image, mask
+
+    def __len__(self):
+        return len(self.image_filenames)
 
 
 class PRImADataset(Dataset):
@@ -31,7 +128,9 @@ class PRImADataset(Dataset):
             label_dir: The path to the dataset labels (e.g, ./labels-384x256).
             transform: Does nothing for now. I might implement this later.
         """
-        self.image_filenames = [image_filename for image_filename in os.listdir(image_dir)]
+        self.image_filenames = [
+            image_filename for image_filename in os.listdir(image_dir)
+        ]
         self.label_filenames = []
         for image_filename in self.image_filenames:
             # Replace the image filename extension with ".xml"
@@ -47,15 +146,6 @@ class PRImADataset(Dataset):
         self.transform = transform
 
     def __getitem__(self, index):
-
-        def import_image(image_path):
-            image = Image.open(image_path)
-            image_array = np.asarray(image)
-            image_tensor = torch.tensor(image_array)
-            image_tensor = image_tensor.type(torch.FloatTensor)
-            # We have to permute so that channels are located in the first axis.
-            # i.e, we're going from H x W x C to C x H x W, as required by Conv2D.
-            return image_tensor.permute(2, 0, 1)
 
         def xml_to_json(xml_data):
             label_dom = minidom.parse(xml_data)
