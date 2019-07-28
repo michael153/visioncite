@@ -31,6 +31,5 @@ dataset2 = VIADataset("WLA-500c2", "metadata2.json", transform=transform) # Mich
 dataset = ConcatDataset([dataset1, dataset2])
 
 model = CNN(len(VIADataset.CLASSES))
-traning_dataset, testing_dataset = random_split(dataset, (2, len(dataset) - 2))
-train(model, traning_dataset, batch_size=2, num_epochs=1)
+train(model, dataset)
 save(model, "model.pt")
