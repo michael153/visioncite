@@ -10,6 +10,6 @@ export HOME=$(pwd)/home
 python train.py &> train.tb
 
 # Mail results
-python mail.py "Training Results" "$(cat train.log)" bveeramani@berkeley.edu
-python mail.py "Training Results" "$(cat train.log)" m.wan@berkeley.edu
+python mail.py --subject "Training Results" --message "$(cat train.tb)" bveeramani@berkeley.edu
+python mail.py --subject "Training Results" --message "$(cat train.tb)" m.wan@berkeley.edu
 rm train.tb
