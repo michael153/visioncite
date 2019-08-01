@@ -20,7 +20,6 @@ def train(model,
     model.to(OPTIMAL_DEVICE)
 
     for epoch in range(num_epochs):
-
         model.train()
         for batch_number, (observations, labels) in enumerate(dataloader):
             model.zero_grad()
@@ -34,6 +33,8 @@ def train(model,
 
             loss.backward()
             optimizer.step()
+            
+            print("Epoch", epoch, "Batch", batch_number, "Loss", loss.item())
 
 
 def test(model, dataset, batch_size=DEFAULT_BATCH_SIZE * 2):
