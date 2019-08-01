@@ -20,13 +20,13 @@ def train(model,
     model.to(OPTIMAL_DEVICE)
 
     for epoch in range(num_epochs):
+
         model.train()
-        for observations, labels in dataloader:
+        for batch_number, (observations, labels) in enumerate(dataloader):
             model.zero_grad()
 
             observations = observations.to(OPTIMAL_DEVICE)
             labels = labels.to(OPTIMAL_DEVICE)
-
             predictions = model(observations)
             # torch.Size([N, 1]) => torch.Size([N])
             predictions = torch.squeeze(predictions)

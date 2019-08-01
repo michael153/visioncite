@@ -62,7 +62,16 @@ class VIADataset(Dataset):
                 shape_attributes = region["shape_attributes"]
                 shape_type = shape_attributes["name"]
 
-                region_label = region["region_attributes"]["type"]
+                region_attributes = region["region_attributes"]
+                if type(region_attributes["type"]) is str:
+                    # Balaji's data is set up this way
+                    region_label = region["region_attributes"]["type"]
+                else:
+                    # Michael's data is set up this way
+                    for key in region_attributes["type"]:
+                        if region_attributes["type"][key]:
+                            region_label = key
+
                 if not region_label in self.CLASSES:
                     continue
                 color = self.CLASSES.index(region_label)

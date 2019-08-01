@@ -1,23 +1,27 @@
-"""Implements functions for compressing the PRImA layout analysis dataset.
+"""Implements functions for compressing the WLA500 layout analysis dataset
 
-usage: compress.py [-h] [--output OUTPUT_DIR] [--height HEIGHT]
-                   [--width WIDTH] [-o]
-                   dataset
+usage: compress.py [-h] [--output OUTPUT_DIR] [--output_meta OUTPUT_JSON]
+                   [--height HEIGHT] [--width WIDTH] [-o]
+                   dataset metadata
 
 Compress dataset
 
 positional arguments:
-  dataset              path to the dataset
+  dataset               path to the dataset
+  metadata              path to the metadata JSON file
 
 optional arguments:
-  -h, --help           show this help message and exit
-  --output OUTPUT_DIR  desired output directory
-  --height HEIGHT      desired image height (default: 384)
-  --width WIDTH        desired image width (default: 256)
-  -o, --overwrite      should duplicate files be overwritten
+  -h, --help            show this help message and exit
+  --output OUTPUT_DIR   desired output directory
+  --output_meta OUTPUT_JSON
+                        desired output metadata file
+  --height HEIGHT       desired image height (default: 384)
+  --width WIDTH         desired image width (default: 256)
+  -o, --overwrite       should duplicate files be overwritten
 """
-# TODO: Add support for arbitrary image extensions
 import argparse
+import json
+import math
 import os
 import sys
 
@@ -25,12 +29,8 @@ from PIL import Image
 
 DEFAULT_HEIGHT = 384
 DEFAULT_WIDTH = 512
-DEFAULT_OUTPUT_DIR = "dataset-%s-%s" % (DEFAULT_HEIGHT, DEFAULT_WIDTH)
-# If this is set to true, then the compressor will overwrite duplicate images.
-# Otherwise, duplicate images will be skipped.
-DEFAULT_OVERWRITE = True
-
-IMAGE_EXTENSION = ".png"
+DEFAULT_OUTPUT_DIR = "WLA-500c"
+DEFAULT_OUTPUT_META = "metadatac.json"
 
 
 def main():
@@ -43,10 +43,17 @@ def main():
     parser.add_argument('dataset_path',
                         metavar='dataset',
                         help='path to the dataset')
+    parser.add_argument('metadata_path',
+                        metavar='metadata',
+                        help='path to the metadata JSON file')
     parser.add_argument('--output',
                         dest='output_dir',
                         default=DEFAULT_OUTPUT_DIR,
                         help='desired output directory')
+    parser.add_argument('--output_meta',
+                        dest='output_json',
+                        default=DEFAULT_OUTPUT_META,
+                        help='desired output metadata file')
     parser.add_argument('--height',
                         type=int,
                         dest='height',
@@ -65,8 +72,9 @@ def main():
 
     args = parser.parse_args()
 
-    compress_dataset(args.dataset_path, args.output_dir, args.height,
-                     args.width)
+    update_metadata(args.metadata_path, args.output_json, args.dataset_path,
+                    args.height, args.width)
+    compress_images(args.dataset_path, args.output_dir, args.height, args.width)
 
     sys.stdout.write("\033")
     print("Succesfully compressed dataset to %s with no errors." %
@@ -74,115 +82,81 @@ def main():
     return 0
 
 
-def compress_dataset(dataset_path,
-                     output_dir=DEFAULT_OUTPUT_DIR,
-                     height=DEFAULT_HEIGHT,
-                     width=DEFAULT_WIDTH,
-                     overwrite=DEFAULT_OVERWRITE):
-    """Compresses the PRImA layout analysis dataset to a specified path.
-
-    Arguments:
-        dataset_path: Path to the dataset. The dataset must contain a
-            subdirectory named "XML" and a subdirectory named "Images".
-        output_dir: The desired path for the compressed dataset.
-            The directory will be created if it does not currently exist.
-        height: The height to which the images will be compressed to.
-        width: The width to which the images will be compressed to.
-        overwrite: If true, then duplicate files will be overwritten.
-    """
-    make_output_directories(output_dir)
-    compress_images(dataset_path, output_dir, height, width, overwrite)
-
-
-def make_output_directories(output_dir):
-    """Creates output directory for the compressed dataset.
-
-    Arguments:
-        output_dir: A path to the desired output directory location
-    """
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
-
-def update_filename(image_filename):
-    """Updates the extension on an image filename.
-
-    This method accepts both paths to images and filename.
-
-    Arguments:
-        image_filename: Either a path to an image or an iamge filename
-
-    Returns:
-        the image filename with the proper extension. If a path is passed as an
-        argument, then the path is removed and only the filename is returned.
-    """
-    return get_filename_without_extension(image_filename) + IMAGE_EXTENSION
-
-
-def get_filename_without_extension(path):
-    """Given a path to a file, returns the filename without the extension."""
-    # This gets the filename from the path
-    path_head = os.path.split(path)[1]
-    # This replaces the old file extension with the new extension (e.g, "jpeg")
-    return os.path.splitext(path_head)[0]
-
-
 def compress_images(image_dir,
                     output_dir=DEFAULT_OUTPUT_DIR,
                     height=DEFAULT_HEIGHT,
-                    width=DEFAULT_WIDTH,
-                    overwrite=DEFAULT_OVERWRITE):
-    """Compress all images in the specified directory.
-
-    Arguments:
-        image_dir: Path to the image directory.
-        output_dir: The desired path for the compressed dataset.
-        height: The height to which the images will be compressed to.
-        width: The width to which the images will be compressed to.
-        overwrite: If true, then duplicate files will be overwritten.
-    """
+                    width=DEFAULT_WIDTH):
     image_filenames = os.listdir(image_dir)
     num_images = len(image_filenames)
 
-    for num_images_compressed, filename in enumerate(image_filenames):
-        image_path = image_dir + "/" + filename
-        compress_image(image_path, output_dir, height, width, overwrite)
+    for num_images_compressed, image_filename in enumerate(image_filenames):
+        image_path = image_dir + "/" + image_filename
+        compress_image(image_path, output_dir, height, width)
 
         percent = "{0:.0%}".format(num_images_compressed / num_images)
-        print("Compressing images | %s | %s" % (percent, filename), end="\r")
+        print("Compressing images | %s | %s" % (percent, image_filename), end="\r")
 
 
 def compress_image(image_path,
                    output_dir,
                    height=DEFAULT_HEIGHT,
-                   width=DEFAULT_WIDTH,
-                   overwrite=DEFAULT_OVERWRITE):
-    """Compresses the image at the specified file path.
+                   width=DEFAULT_WIDTH):
+    directory, basename = os.path.split(image_path)
+    filename, extension = os.path.splitext(basename)
+    output_path = output_dir + "/" + filename + ".png"
 
-    The image will be converted to JPEG and resized to the specified resolution.
-    The name of the image is preserved, with the slight exception of changes to
-    the file extension.
-
-    Arguments:
-        image_path: Path to an image.
-        output_dir: The compressed image will be saved here.
-        height: The height to which the images will be compressed to.
-        width: The width to which the images will be compressed to.
-        overwrite: If true, then duplicate files will be overwritten.
-    """
-    output_path = output_dir + "/" + update_filename(image_path)
-
-    if os.path.exists(output_path) and not overwrite:
-        print("Warning: %s already exists. Image will be skipped." %
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        print("Warning: %s does not exist. Directory will be created." %
+              output_dir)
+    elif os.path.exists(output_path):
+        print("Warning: %s already exists. Image will be overwritten." %
               output_path)
-        return
 
     image = Image.open(image_path)
-    desired_resolution = width, height
-    resized_image = image.resize(desired_resolution)
-    rgb_image = resized_image.convert("RGB")
+    image = image.resize((width, height))
+    image = image.convert("RGB")
+    image.save(output_path, format="PNG", optimized=True, quality=75)
 
-    rgb_image.save(output_path, format="PNG", optimized=True, quality=75)
+
+# Run this script before compressing images!
+def update_metadata(metadata_path,
+                    output_path,
+                    image_dir,
+                    height=DEFAULT_HEIGHT,
+                    width=DEFAULT_WIDTH):
+    with open(metadata_path) as metadata_file:
+        metadata = json.load(metadata_file)
+
+    image_metadata = metadata["_via_img_metadata"]
+    for image_key in image_metadata:
+        image_filename = image_metadata[image_key]["filename"]
+        if not image_filename in os.listdir(image_dir):
+            continue
+
+        image_path = os.path.join(image_dir, image_filename)
+        original_width, original_height = Image.open(image_path).size
+
+        x_scale = lambda x: math.floor(x * width / original_width)
+        y_scale = lambda y: math.floor(y * height / original_height)
+
+        for region in image_metadata[image_key]["regions"]:
+            shape_attributes = region["shape_attributes"]
+            if shape_attributes["name"] == "polygon":
+                shape_attributes["all_points_x"] = [
+                    x_scale(x) for x in shape_attributes["all_points_x"]
+                ]
+                shape_attributes["all_points_y"] = [
+                    y_scale(y) for y in shape_attributes["all_points_y"]
+                ]
+            elif shape_attributes["name"] == "rect":
+                shape_attributes["x"] = x_scale(shape_attributes["x"])
+                shape_attributes["y"] = y_scale(shape_attributes["y"])
+                shape_attributes["width"] = x_scale(shape_attributes["width"])
+                shape_attributes["height"] = y_scale(shape_attributes["height"])
+
+    with open(output_path, "w") as output_file:
+        json.dump(metadata, output_file)
 
 
 if __name__ == "__main__":

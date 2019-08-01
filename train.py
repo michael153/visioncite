@@ -25,11 +25,14 @@ def transform(image, mask):
     mask = mask.type(torch.LongTensor)
     return image, mask
 
-
-dataset1 = VIADataset("WLA-500c1", "metadata1.json", transform=transform) # Balaji's data
-dataset2 = VIADataset("WLA-500c2", "metadata2.json", transform=transform) # Michael's data
+print("Loading first dataset...")
+dataset1 = VIADataset("WLA-500c1", "metadata1.json", transform=transform) # Michael's data
+print("Loading second dataset...")
+dataset2 = VIADataset("WLA-500c2", "metadata2.json", transform=transform) # Balaji's data
 dataset = ConcatDataset([dataset1, dataset2])
 
 model = CNN(len(VIADataset.CLASSES))
+print("Training model...")
 train(model, dataset)
+print("Saving model...")
 save(model, "model.pt")

@@ -5,9 +5,9 @@ should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 transfer_input_files = datasets.py, mail.py, models.py, training.py, train.py, WLA-500c1, WLA-500c2, metadata1.json, metadata2.json, python.tar.gz
 
-log = train.log
-error = train.err
-output = train.out
+log = train_$(Cluster).log
+error = train_$(Cluster).err
+output = train_$(Cluster).out
 
 request_gpus = 1
 request_memory = 8GB
