@@ -82,7 +82,7 @@ class VIADataset(Dataset):
                     draw_poly(shape_attributes, overlay, color)
 
             mask = np.asarray(overlay).astype(int)
-            return torch.tensor(mask, dtype=torch.float)
+            return torch.tensor(mask, dtype=torch.long)
 
         with open(label_json) as json_file:
             image_metadata = json.load(json_file)["_via_img_metadata"]
@@ -100,13 +100,15 @@ class VIADataset(Dataset):
             mask = create_mask(regions, (width, height))
             self.filename_to_mask[filename] = mask
 
+
+
     def __getitem__(self, index):
         image_filename = self.image_filenames[index]
         image = self.filename_to_image[image_filename]
         mask = self.filename_to_mask[image_filename]
 
         if self.transform:
-            image, mask = self.transform(image, mask)
+            image = self.transform(image)
 
         return image, mask
 

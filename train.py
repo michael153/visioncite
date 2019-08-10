@@ -1,38 +1,36 @@
 import torch
 import torch.nn.functional as F
 from torch.utils.data import random_split, ConcatDataset
+from torchvision  import transforms
 
-from training import train, save
+from training import train, test, save
 from datasets import VIADataset
 from models import CNN
 
+transform = transforms.Normalize([217.5426, 216.6502, 214.7937], [74.5412, 74.2549, 75.9361])
 
-def transform(image, mask):
-    size = 384, 512
-
-    # Add mini-batch dimension
-    image = image.unsqueeze(0)
-    image = F.interpolate(image, size=size)
-    # Remove mini-batch dimension
-    image = image.squeeze(0)
-
-    # Add mini-batch and channel dimensions
-    mask = mask.unsqueeze(0).unsqueeze(0)
-    mask = F.interpolate(mask, size=size)
-    # Remove mini-batch and channel dimensions
-    mask = mask.squeeze(0).squeeze(0)
-
-    mask = mask.type(torch.LongTensor)
-    return image, mask
-
-print("Loading first dataset...")
+print("[ INFO ] Loading Michael's data...")
 dataset1 = VIADataset("WLA-500c1", "metadata1.json", transform=transform) # Michael's data
-print("Loading second dataset...")
+
+print("[ INFO ] Loading Balaji's data...")
 dataset2 = VIADataset("WLA-500c2", "metadata2.json", transform=transform) # Balaji's data
+
+print("[ INFO ] Concatinating data...")
 dataset = ConcatDataset([dataset1, dataset2])
 
+lengths = [int(len(dataset) * 0.8), int(len(dataset) * 0.2)]
+
+print("[ INFO ] Splitting data...")
+train_dataset, test_dataset = random_split(dataset, lengths)
+
 model = CNN(len(VIADataset.CLASSES))
-print("Training model...")
-train(model, dataset)
-print("Saving model...")
+
+print("[ INFO ] Training model...")
+train(model, train_dataset)
+
+print("[ INFO ] Testing model...")
+accuracy = test(model, test_dataset)
+print("\tACCURACY\n\t%.4f" % accuracy)
+
+print("[ INFO ] Saving model...")
 save(model, "model.pt")

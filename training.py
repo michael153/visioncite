@@ -1,9 +1,11 @@
 """Implements functions for traning a neural network."""
+import functools
+
 import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 
-DEFAULT_BATCH_SIZE = 32
+DEFAULT_BATCH_SIZE = 16
 DEFAULT_EPOCH_SIZE = 64
 OPTIMAL_DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
 
@@ -18,33 +20,36 @@ def train(model,
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
     model.to(OPTIMAL_DEVICE)
-
     for epoch in range(num_epochs):
+
         model.train()
         for batch_number, (observations, labels) in enumerate(dataloader):
             model.zero_grad()
 
             observations = observations.to(OPTIMAL_DEVICE)
             labels = labels.to(OPTIMAL_DEVICE)
+
             predictions = model(observations)
             # torch.Size([N, 1]) => torch.Size([N])
             predictions = torch.squeeze(predictions)
+
             loss = loss_func(predictions, labels)
 
             loss.backward()
             optimizer.step()
-            
-            print("Epoch", epoch, "Batch", batch_number, "Loss", loss.item())
+
+            if not epoch and not batch_number:
+                print("\tEPOCH\tBATCH\tLOSS")
+            print("\t%d\t%d\t%.4f" % (epoch, batch_number, loss.item()))
 
 
 def test(model, dataset, batch_size=DEFAULT_BATCH_SIZE * 2):
 
     def average_accuracy(predictions, labels):
-        num_correct = 0
-        for prediction, label in zip(predictions, labels):
-            if prediction.argmax(dim=0) == label:
-                num_correct += 1
-        return num_correct / len(predictions)
+        predicted_labels = torch.argmax(predictions, dim=1)
+        num_correct = torch.sum(predicted_labels == labels)
+        num_labels = functools.reduce(lambda a, b : a * b, labels.shape)
+        return float(num_correct) / num_labels
 
     dataloader = DataLoader(dataset, batch_size)
     batch_accuracies = []
