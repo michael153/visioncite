@@ -5,19 +5,19 @@ import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 
-DEFAULT_BATCH_SIZE = 16
-DEFAULT_EPOCH_SIZE = 64
 OPTIMAL_DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
 
 
 #pylint: disable=too-many-arguments, too-many-locals
 def train(model,
           dataset,
-          batch_size=DEFAULT_BATCH_SIZE,
-          num_epochs=DEFAULT_EPOCH_SIZE,
-          loss_func=torch.nn.CrossEntropyLoss()):
+          batch_size=16,
+          num_epochs=64,
+          loss_func=torch.nn.CrossEntropyLoss(),
+          optimizer_class=torch.optim.Adam,
+          learning_rate=0.001):
     dataloader = DataLoader(dataset, batch_size, shuffle=True)
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optimizer_class(model.parameters(), lr=learning_rate)
 
     model.to(OPTIMAL_DEVICE)
     for epoch in range(num_epochs):
@@ -43,7 +43,7 @@ def train(model,
             print("\t%d\t%d\t%.4f" % (epoch, batch_number, loss.item()))
 
 
-def test(model, dataset, batch_size=DEFAULT_BATCH_SIZE * 2):
+def test(model, dataset, batch_size=32):
 
     def average_accuracy(predictions, labels):
         predicted_labels = torch.argmax(predictions, dim=1)
