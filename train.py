@@ -26,7 +26,7 @@ train_dataset, test_dataset = random_split(dataset, lengths)
 model = CNN(len(VIADataset.CLASSES))
 
 print("[ INFO ] Training model...")
-train(model, train_dataset)
+train(model, train_dataset, batch_size=2)
 
 print("[ INFO ] Testing model...")
 accuracy = test(model, test_dataset)
