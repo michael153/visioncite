@@ -19,10 +19,10 @@ def train(model,
     dataloader = DataLoader(dataset, batch_size, shuffle=True)
     optimizer = optimizer_class(model.parameters(), lr=learning_rate)
 
+    model.train()
     model.to(OPTIMAL_DEVICE)
-    for epoch in range(num_epochs):
 
-        model.train()
+    for epoch in range(num_epochs):
         for batch_number, (observations, labels) in enumerate(dataloader):
             model.zero_grad()
 
@@ -54,9 +54,8 @@ def test(model, dataset, batch_size=32):
     dataloader = DataLoader(dataset, batch_size)
     batch_accuracies = []
 
-    model = model.to(OPTIMAL_DEVICE)
-
     model.eval()
+    model = model.to(OPTIMAL_DEVICE)
     with torch.no_grad():
         for observations, labels in dataloader:
             observations = observations.to(OPTIMAL_DEVICE)
