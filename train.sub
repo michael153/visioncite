@@ -9,7 +9,7 @@ log = train_$(Cluster).log
 error = train_$(Cluster).err
 output = train_$(Cluster).out
 
-request_gpus = 1
+request_gpus = 2
 request_memory = 8GB
 request_disk = 2.5GB
 
