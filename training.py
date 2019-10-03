@@ -1,11 +1,19 @@
 """Implements functions for traning a neural network."""
 import functools
+from datetime import datetime
 
 import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 
-OPTIMAL_DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
+from mail import send_mail  # TODO: Remove this once CHTC stuff is figured out
+
+
+def optimize(model):
+    if torch.cuda.device_count() > 1:
+          model = nn.DataParallel(model)
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
+    return model.to(device)
 
 
 #pylint: disable=too-many-arguments, too-many-locals
@@ -20,8 +28,6 @@ def train(model,
     optimizer = optimizer_class(model.parameters(), lr=learning_rate)
 
     model.train()
-    model.to(OPTIMAL_DEVICE)
-
     for epoch in range(num_epochs):
         for batch_number, (observations, labels) in enumerate(dataloader):
             model.zero_grad()
@@ -38,9 +44,18 @@ def train(model,
             loss.backward()
             optimizer.step()
 
+            # TODO: Refactor this once CHTC stuff is figured out
             if not epoch and not batch_number:
                 print("\tEPOCH\tBATCH\tLOSS")
             print("\t%d\t%d\t%.4f" % (epoch, batch_number, loss.item()))
+
+            # TODO: Remove this once CHTC stuff is figured out
+            send_email("[CHTC] Training Update", "Batch %d finished at %s with loss %s." % (batch_number, datetime.now(), loss.item()), "bveeramani@berkeley.edu")
+            send_email("[CHTC] Training Update", "Batch %d finished at %s with loss %s." % (batch_number, datetime.now(), loss.item()), "m.wan@berkeley.edu")
+
+        # TODO: Remove this once CHTC stuff is figured out
+        send_email("[CHTC] Training Update", "Epoch %d finished at %s." % (epoch, datetime.now()), "bveeramani@berkeley.edu")
+        send_email("[CHTC] Training Update", "Epoch %d finished at %s." % (epoch, datetime.now()), "m.wan@berkeley.edu")
 
 
 def test(model, dataset, batch_size=32):
@@ -55,7 +70,6 @@ def test(model, dataset, batch_size=32):
     batch_accuracies = []
 
     model.eval()
-    model = model.to(OPTIMAL_DEVICE)
     with torch.no_grad():
         for observations, labels in dataloader:
             observations = observations.to(OPTIMAL_DEVICE)
@@ -71,7 +85,11 @@ def test(model, dataset, batch_size=32):
 
 
 def save(model, filename):
-    torch.save(model.state_dict(), filename)
+    if hasattr(model, "module"):
+        state = model.module.state_dict()
+    else:
+        state = model.state_dict()
+    torch.save(state, filename)
 
 
 if __name__ == "__main__":
