@@ -6,7 +6,7 @@ import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 
-from mail import send_mail  # TODO: Remove this once CHTC stuff is figured out
+from mail import send_email  # TODO: Remove this once CHTC stuff is figured out
 
 
 def optimize(model):
