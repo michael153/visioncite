@@ -9,13 +9,6 @@ from torch.utils.data import DataLoader
 from mail import send_email  # TODO: Remove this once CHTC stuff is figured out
 
 
-def optimize(model):
-    if torch.cuda.device_count() > 1:
-          model = nn.DataParallel(model)
-    device = "cuda:0" if torch.cuda.is_available() else "cpu"
-    return model.to(device)
-
-
 #pylint: disable=too-many-arguments, too-many-locals
 def train(model,
           dataset,
@@ -26,15 +19,16 @@ def train(model,
           learning_rate=0.001):
     dataloader = DataLoader(dataset, batch_size, shuffle=True)
     optimizer = optimizer_class(model.parameters(), lr=learning_rate)
+    device = next(model.parameters()).device
 
     model.train()
     for epoch in range(num_epochs):
         for batch_number, (observations, labels) in enumerate(dataloader):
             model.zero_grad()
 
-            observations = observations.to(OPTIMAL_DEVICE)
-            labels = labels.to(OPTIMAL_DEVICE)
-
+            observations = observations.to(device)
+            labels = labels.to(device)
+            return
             predictions = model(observations)
             # torch.Size([N, 1]) => torch.Size([N])
             predictions = torch.squeeze(predictions)
@@ -67,13 +61,15 @@ def test(model, dataset, batch_size=32):
         return float(num_correct) / num_labels
 
     dataloader = DataLoader(dataset, batch_size)
+    device = next(model.parameters()).device
+
     batch_accuracies = []
 
     model.eval()
     with torch.no_grad():
         for observations, labels in dataloader:
-            observations = observations.to(OPTIMAL_DEVICE)
-            labels = labels.to(OPTIMAL_DEVICE)
+            observations = observations.to(device)
+            labels = labels.to(device)
 
             predictions = model(observations)
 

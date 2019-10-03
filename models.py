@@ -1,36 +1,38 @@
 """The models.py module implements various neural network models."""
-import torch.nn as nn
-import torch.nn.functional as F
 import torch
+import torch.nn as nn
 
 
-def create_conv(c1, c2, c3):
-    convolution = nn.Sequential(
-        nn.Conv2d(c1, c2, kernel_size=3, stride=1, padding=1),
-        nn.BatchNorm2d(c2),
-        nn.ReLU(),
-        nn.Conv2d(c2, c3, kernel_size=3, stride=1, padding=1),
-        nn.BatchNorm2d(c3),
-        nn.ReLU())
-    return convolution
+class SSM1(nn.Module):
+    """Semantic Segmentation Model (SSM) Mark 1.
 
-
-def create_deconv(c1, c2, c3):
-    deconvolution = nn.Sequential(
-        nn.Conv2d(c1, c2, kernel_size=3, stride=1, padding=1),
-        nn.BatchNorm2d(c2),
-        nn.ReLU(),
-        nn.Conv2d(c2, c3, kernel_size=3, stride=1, padding=1),
-        nn.BatchNorm2d(c3),
-        nn.ReLU())
-    return deconvolution
-
-
-class CNN(nn.Module):
-    """A convolutional neural network that segments images into classes."""
+    A convolutional neural network that segments webpage images into classes.
+    Based on http://personal.psu.edu/xuy111/projects/cvpr2017_doc.html.
+    """
 
     def __init__(self, num_classes):
-        super(CNN, self).__init__()
+        super(SSM1, self).__init__()
+
+        def create_conv(c1, c2, c3):
+            convolution = nn.Sequential(
+                nn.Conv2d(c1, c2, kernel_size=3, stride=1, padding=1),
+                nn.BatchNorm2d(c2),
+                nn.ReLU(),
+                nn.Conv2d(c2, c3, kernel_size=3, stride=1, padding=1),
+                nn.BatchNorm2d(c3),
+                nn.ReLU())
+            return convolution
+
+
+        def create_deconv(c1, c2, c3):
+            deconvolution = nn.Sequential(
+                nn.Conv2d(c1, c2, kernel_size=3, stride=1, padding=1),
+                nn.BatchNorm2d(c2),
+                nn.ReLU(),
+                nn.Conv2d(c2, c3, kernel_size=3, stride=1, padding=1),
+                nn.BatchNorm2d(c3),
+                nn.ReLU())
+            return deconvolution
 
         self.conv1 = create_conv(3, 64, 128)
         self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2, return_indices=True)
