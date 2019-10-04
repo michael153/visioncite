@@ -10,6 +10,8 @@ export HOME=$(pwd)/home
 python train.py &> train.tb
 # Print to Condor log
 cat train.tb
+# Echo completion
+echo "Completed training"
 
 # Mail results
 python mail.py --subject "Training Results" --message "$(cat train.tb)" bveeramani@berkeley.edu
