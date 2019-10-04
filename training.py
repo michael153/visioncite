@@ -28,7 +28,7 @@ def train(model,
 
             observations = observations.to(device)
             labels = labels.to(device)
-            return
+
             predictions = model(observations)
             # torch.Size([N, 1]) => torch.Size([N])
             predictions = torch.squeeze(predictions)
