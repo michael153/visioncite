@@ -241,7 +241,7 @@ class PRImADataset(Dataset):
         label_json = xml_to_json(label_path)
         mask = json_to_mask(label_json)
 
-        sample = {"image": image, "label": mask}
+        sample = image, mask
 
         if self.transform:
             sample = self.transform(sample)
